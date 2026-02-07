@@ -18,8 +18,8 @@
   --white: #fff;
   --gray: #6c757d;
   --gray-dark: #343a40;
-  --primary: #007bff;
-  --secondary: #6c757d;
+  --primary: #CADCFC;
+  --secondary: #00246B;
   --success: #28a745;
   --info: #17a2b8;
   --warning: #ffc107;
@@ -60,7 +60,7 @@ body {
   line-height: 1.5;
   color: #212529;
   text-align: left;
-  background-color: #fff;
+  background-color: #CADCFC;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -6694,7 +6694,7 @@ a.close.disabled {
 }
 
 .bg-primary {
-  background-color: #007bff !important;
+  background-color: #CADCFC !important;
 }
 
 a.bg-primary:hover, a.bg-primary:focus,
@@ -6704,7 +6704,7 @@ button.bg-primary:focus {
 }
 
 .bg-secondary {
-  background-color: #6c757d !important;
+  background-color: #00246B !important;
 }
 
 a.bg-secondary:hover, a.bg-secondary:focus,

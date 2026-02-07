@@ -3,15 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title> {% block title%} {% endblock title%}</title>
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
+    <script src="../static/js/bootstrap.js"></script>
 
 </head>
 <body>
-    <h1>HEADER</h1>
-    <hr>
+    <nav class=" navbar navbar-expand-lg navbar-dark bg-secondary">
+        <a class="navbar-brand mr-auto" href="#">GIGAJ</a>
+        <div class="collapse navbar-collapse" >
+            <div class=" mr-auto ">
+            </div>
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav mr-auto ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Settings</a>
+                    </li>
+                </ul>
+                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Sign In</button>
+                <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Sign Up</button>
+            </form>
+        </div>
+    </nav>
+
     {% block content %}
     {% endblock content %}
-    <hr>
-    <h6> footer</h6>
+    <nav class=" navbar navbar-expand-lg navbar-dark mt-4 bg-secondary">
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+            <div>
+                <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav ml-2 ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Linkedin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">Github</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="#">YouTube</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Telegram</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Facebook</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">Instagram</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">TikTok</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="#">X</a>
+                    </li>
+                </ul>
 
+            </form>
+            </div>
+            <div class=" mr-auto ">
+            </div>
+            <form class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav mr-auto ">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Terms and Conditions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#">Privacy Policy</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="#">Credits</a>
+                    </li>
+                </ul>
+
+            </form>
+        </div>
+    </nav>
 </body>
 </html>
