@@ -17,10 +17,12 @@
         </nav>
     </div>
 
-    {% block content %}
+
     <main class="flex-grow-1">
+        {% block content %}
+        {% endblock content %}
     </main>
-    {% endblock content %}
+
 
     <div class="container-fluid mt-auto">
         <nav class="row navbar-dark bg-secondary mt-2 mb-2">
