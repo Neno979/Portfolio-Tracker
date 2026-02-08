@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
     <title> {% block title%} {% endblock title%}</title>
@@ -7,76 +7,30 @@
     <script src="../static/js/bootstrap.js"></script>
 
 </head>
-<body>
-    <nav class=" navbar navbar-expand-lg navbar-dark bg-secondary">
-        <a class="navbar-brand mr-auto" href="#">GIGAJ</a>
-        <div class="collapse navbar-collapse" >
-            <div class=" mr-auto ">
-            </div>
-            <form class="form-inline my-2 my-lg-0">
-                <ul class="navbar-nav mr-auto ">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Settings</a>
-                    </li>
-                </ul>
-                <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Sign In</button>
-                <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Sign Up</button>
-            </form>
-        </div>
-    </nav>
+<body class="d-flex flex-column h-100">
+    <div class="container-fluid">
+        <nav class="row navbar-dark bg-secondary mt-2 mb-2">
+            <a class="col navbar-brand mt-2 mb-2" href="#">Hodlers Portfolio</a>
+            <a class="nav-link mt-2 mb-2" href="#">Settings</a>
+            <button class="btn btn-outline-primary mr-2 mt-2 mb-2" type="submit">Sign In</button>
+            <button class="btn btn-outline-danger mr-2 mt-2 mb-2" type="submit">Sign Up</button>
+        </nav>
+    </div>
 
     {% block content %}
+    <main class="flex-grow-1">
+    </main>
     {% endblock content %}
-    <nav class=" navbar navbar-expand-lg navbar-dark mt-4 bg-secondary">
-        <div class="collapse navbar-collapse " id="navbarSupportedContent">
-            <div>
-                <form class="form-inline my-2 my-lg-0">
-                <ul class="navbar-nav ml-2 ">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Linkedin</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#">Github</a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="#">YouTube</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Telegram</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Facebook</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#">Instagram</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#">TikTok</a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="#">X</a>
-                    </li>
-                </ul>
 
-            </form>
-            </div>
-            <div class=" mr-auto ">
-            </div>
-            <form class="form-inline my-2 my-lg-0">
-                <ul class="navbar-nav mr-auto ">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Terms and Conditions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#">Privacy Policy</a>
-                    </li>
-                    <li class="nav-item ">
-                        <a class="nav-link" href="#">Credits</a>
-                    </li>
-                </ul>
+    <div class="container-fluid mt-auto">
+        <nav class="row navbar-dark bg-secondary mt-2 mb-2">
+            <a class="col navbar-brand mt-2 mb-2">© Gigaj 2026.</a>
+            <a class="nav-link mt-2 mb-2" href="#">About</a>
+            <a class="nav-link mt-2 mb-2" href="#">Contact</a>
+            <a class="nav-link mt-2 mb-2" href="#">FAQ</a>
 
-            </form>
-        </div>
-    </nav>
+        </nav>
+    </div>
+
 </body>
 </html>
