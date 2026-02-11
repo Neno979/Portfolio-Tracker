@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-    <h1 class="mt-5 mb-5">testing...</h1>
-{% endblock content %}
+{% block title%}Portfolio{% endblock title%}
+
+{% block tname%}User portfolio{% endblock tname%}
+
+{% block columns %}
+        {% for header in headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+    {% endblock columns %}
+        {% block table %}
+
+        {% endblock table %}

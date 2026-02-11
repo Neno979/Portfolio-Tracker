@@ -9,6 +9,7 @@ def index():
 
 @app.route('/portfolio')
 def portfolio():
-    return render_template('portfolio.html')
+    headers = ["Coin","share", "profit", "value", "size", "ma 7d"]
+    return render_template('portfolio.html', headers = headers)
 if __name__ == '__main__':
     app.run(debug=True)
