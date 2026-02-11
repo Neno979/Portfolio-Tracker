@@ -2,7 +2,7 @@
 <html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
-    <title> {% block title%} {% endblock title%}</title>
+    <title> {% block title%}Home{% endblock title%}</title>
     <link href="../static/css/bootstrap.css" rel="stylesheet">
     <script src="../static/js/bootstrap.js"></script>
 
@@ -19,8 +19,19 @@
 
 
     <main class="flex-grow-1">
-        {% block content %}
-        {% endblock content %}
+        <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        {% block columns%}
+                        {%endblock columns%}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% block table %}
+                    {% endblock table %}
+                </tbody>
+
+            </table>
     </main>
 
 

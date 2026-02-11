@@ -4,7 +4,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    headers = ["#", "Coin", "Price", "M.Cap.", "24hVol.", "24h%"]
+    return render_template('index.html', headers = headers)
 
 @app.route('/portfolio')
 def portfolio():
