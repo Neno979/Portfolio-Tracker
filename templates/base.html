@@ -11,9 +11,8 @@
     <div class="container-fluid">
         <nav class="row navbar-dark bg-secondary mt-2 mb-2">
             <a class="col navbar-brand mt-2 mb-2" href="/">Hodlers Portfolio</a>
-            <a class="nav-link mt-2 mb-2" href="#">Settings</a>
-            <a href="/sign-in" class="btn btn-outline-primary mr-2 mt-2 mb-2" >Sign In</a>
-            <a href="/sign-up" class="btn btn-outline-danger mr-2 mt-2 mb-2" >Sign Up</a>
+            {%block hmenu%}
+            {%endblock hmenu%}
         </nav>
     </div>
 
@@ -33,6 +32,9 @@
                     {% endblock table %}
                 </tbody>
             </table>
+            {% block form %}
+
+            {% endblock form %}
         </div>
     </main>
 
