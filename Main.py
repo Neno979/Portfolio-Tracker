@@ -20,7 +20,7 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    headers = ["#", "Coin", "Price", "M.Cap.", "24hVol.", "24h%"]
+    headers = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     return render_template("index.html", headers = headers)
 
 @app.route("/portfolio" , methods=["GET", "POST"])
