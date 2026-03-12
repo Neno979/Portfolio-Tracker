@@ -20,11 +20,35 @@ class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rank = db.Column(db.Integer, unique=True)
     name = db.Column(db.String, unique=True)
+    symbol = db.Column(db.String, unique=True)
     price = db.Column(db.Float, unique=False)
     mcap = db.Column(db.Float, unique=False)
     volume = db.Column(db.Float, unique=False)
     change = db.Column(db.Float, unique=False)
 
+    def format_value(self, value):
+        if value >= 100_000_000_000:
+            return f"{value / 1_000_000_000_000:.2f}T"
+        elif value >= 100_000_000:
+            return f"{value / 1_000_000_000:.2f}B"
+        elif value >= 100_000:
+            return f"{value / 1_000_000:.2f}M"
+        elif value >= 100:
+            return f"{value / 1_000:.2f}k"
+        else:
+            return f"{value:.2f}"
+
+    @property
+    def formatted_price(self):
+        return self.format_value(self.price)
+
+    @property
+    def formatted_mcap(self):
+        return self.format_value(self.mcap)
+
+    @property
+    def formatted_volume(self):
+        return self.format_value(self.volume)
 
 with app.app_context():
     db.create_all()
@@ -49,6 +73,7 @@ def index():
         btc = Coin(
             rank=1,
             name=bitcoin_data['name'],
+            symbol=bitcoin_data['symbol'],
             price=float(bitcoin_data['price']),
             mcap=float(bitcoin_data['marketCap']),
             volume=float(bitcoin_data['24hVolume']),
@@ -58,7 +83,7 @@ def index():
 
     db.session.commit()
 
-    return render_template("index.html", headers = headers, theads = theads, btc = btc)
+    return render_template("index.html", theads = theads, btc = btc)
 
 @app.route("/portfolio" , methods=["GET", "POST"])
 def portfolio():
