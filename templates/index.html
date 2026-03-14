@@ -15,47 +15,35 @@
         {% endfor %}
     {% endblock columns %}
         {% block table %}
-            <tr>
-                <th scope="row">{{ btc.rank }}</th>
-                <td>
+            {% if coins %}
+                {% for coin in coins %}
+                    <tr>
+                        <th scope="row">{{ coin.rank }}</th>
+                        <td>
                     <!-- Mobile: Stack name and price vertically -->
-                    <div class="d-md-none">
-                        <div>{{ btc.symbol }}</div>
-                        <div>${{ btc.formatted_price }}</div>
-                    </div>
+                            <div class="d-md-none">
+                                <div>{{ coin.symbol }}</div>
+                                <div>${{ coin.formatted_price }}</div>
+                            </div>
                     <!-- Desktop: Name and price on same line -->
-                    <span class="d-none d-md-inline">
-                        {{ btc.symbol }} ${{ "{:,.2f}".format(btc.price) }}
-                    </span>
-
-                </td>
-                <td>
-                    <span class="d-md-none small">${{ btc.formatted_mcap }}</span>
-                    <span class="d-none d-md-inline">${{ "{:,.2f}".format(btc.mcap / 1000000000) }}B</span>
-                </td>
-                <td>
-                    <span class="d-md-none small">${{ btc.formatted_volume }}</span>
-                    <span class="d-none d-md-inline">${{ "{:,.2f}".format(btc.volume / 1000000000) }}B</span>
-                </td>
-                <td class="{% if btc.change > 0 %}text-success{% else %}text-danger{% endif %}">
-                        {{ "%.2f"|format(btc.change) }}%
-                </td>
-            </tr>
-
-            <tr>
-                <th scope="row">02</th>
-                <td>ETH 42k</td>
-                <td>800 bill.</td>
-                <td>25.05 bill.</td>
-                <td>-5.30%</td>
-            </tr>
-            <tr>
-                <th scope="row">03</th>
-                <td>SOL 120</td>
-                <td>50 bill.</td>
-                <td>5.05 bill.</td>
-                <td>+2.10%</td>
-            </tr>
+                            <span class="d-none d-md-inline">
+                                {{ coin.symbol }} ${{ "{:,.2f}".format(coin.price) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="d-md-none small">${{ coin.formatted_mcap }}</span>
+                            <span class="d-none d-md-inline">${{ "{:,.2f}".format(coin.mcap / 1000000000) }}B</span>
+                        </td>
+                        <td>
+                            <span class="d-md-none small">${{ coin.formatted_volume }}</span>
+                            <span class="d-none d-md-inline">${{ "{:,.2f}".format(coin.volume / 1000000000) }}B</span>
+                        </td>
+                        <td class="{% if coin.change > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ "%.2f"|format(coin.change) }}%
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
     {% endblock table %}
 
 

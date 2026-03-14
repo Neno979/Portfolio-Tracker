@@ -57,33 +57,29 @@ with app.app_context():
 def index():
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
-    url = "https://api.coinranking.com/v2/coin/Qwsogvtv82FCd"
+    url = "https://api.coinranking.com/v2/coins?limit=15"
     headers = {"x-access-token": API_KEY}
     response = requests.get(url, headers=headers)
     data = response.json()
-    bitcoin_data = data['data']['coin']
-    btc = Coin.query.filter_by(name='Bitcoin').first()
+    coins_data = data['data']['coins']
+    coins = Coin.query.order_by(Coin.rank).all()
 
-    if btc:
-        btc.price = float(bitcoin_data['price'])
-        btc.mcap = float(bitcoin_data['marketCap'])
-        btc.volume = float(bitcoin_data['24hVolume'])
-        btc.change = float(bitcoin_data['change'])
-    else:
-        btc = Coin(
-            rank=1,
-            name=bitcoin_data['name'],
-            symbol=bitcoin_data['symbol'],
-            price=float(bitcoin_data['price']),
-            mcap=float(bitcoin_data['marketCap']),
-            volume=float(bitcoin_data['24hVolume']),
-            change=float(bitcoin_data['change'])
+    Coin.query.delete()
+    for coin_data in coins_data:
+        new_coin = Coin(
+            rank=int(coin_data['rank']),
+            name=coin_data['name'],
+            symbol=coin_data['symbol'],
+            price=float(coin_data['price']),
+            mcap=float(coin_data['marketCap']),
+            volume=float(coin_data['24hVolume']),
+            change=float(coin_data['change'])
         )
-        db.session.add(btc)
+        db.session.add(new_coin)
 
     db.session.commit()
 
-    return render_template("index.html", theads = theads, btc = btc)
+    return render_template("index.html", theads = theads, coins = coins)
 
 @app.route("/portfolio" , methods=["GET", "POST"])
 def portfolio():
