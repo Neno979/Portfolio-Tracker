@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 import requests
 
@@ -7,6 +7,7 @@ import requests
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
+app.config['SECRET_KEY'] = 'Gigaj_Kokana'
 db = SQLAlchemy(app)
 
 class Ptracker(db.Model):
@@ -14,7 +15,6 @@ class Ptracker(db.Model):
     username = db.Column(db.String, unique=True)
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String, unique=True)
-    confirm = db.Column(db.String, unique=True)
 
 class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -92,18 +92,39 @@ def sign_in():
 
 @app.route("/sign-up" , methods=["GET", "POST"])
 def sign_up():
-    if request.method == "GET":
-        return render_template("signup.html")
-    elif request.method == "POST":
+    #if request.method == "GET":
+        #return render_template("signup.html")
+    if request.method == "POST":
         username = request.form.get("input_username")
         email = request.form.get("input_email")
         password = request.form.get("input_password")
         confirm = request.form.get("confirm_password")
         print("{0} : {1} : {2} : {3} ".format(username, email, password, confirm))
-        ptracker = Ptracker(username=username, email=email, password=password, confirm = confirm)
-        db.session.add(ptracker)
-        db.session.commit()
-        return redirect("/")
 
+        # 1. Check if all fields are filled
+        if not username or not email or not password or not confirm:
+            flash("  All fields are required!", "danger")
+            return render_template("signup.html")
+
+        # 2. Check if passwords match
+        elif password != confirm:
+            flash("  Passwords don't match!", "danger")
+            return render_template("signup.html")
+
+        # 3. Check if username already exists
+        elif Ptracker.query.filter_by(username=username).first():
+            flash("  Username already taken!", "danger")
+            return render_template("signup.html")
+
+        # 4. Check if email already exists
+        elif Ptracker.query.filter_by(email=email).first():
+            flash("  Email already registered!", "danger")
+            return render_template("signup.html")
+        else:
+            ptracker = Ptracker(username=username, email=email, password=password)
+            db.session.add(ptracker)
+            db.session.commit()
+            return redirect("/")
+    return render_template("signup.html")
 if __name__ == "__main__":
     app.run(debug=True)
