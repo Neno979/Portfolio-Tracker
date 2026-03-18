@@ -124,7 +124,9 @@ def sign_up():
             ptracker = Ptracker(username=username, email=email, password=password)
             db.session.add(ptracker)
             db.session.commit()
-            return redirect("/")
+            flash("Account created successfully! You can sign in.", "success")
+            return redirect("/sign-in")
     return render_template("signup.html")
+
 if __name__ == "__main__":
     app.run(debug=True)

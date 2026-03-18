@@ -18,6 +18,28 @@
             {%endblock hmenu%}
         </nav>
     </div>
+    <div class="container-fluid text-center">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            {% for category, message in messages %}
+                                <div class="alert alert-dismissible fade show mb-3 bg-white border" role="alert">
+                                    {% if category == 'danger' %}
+                                        <i class="bi bi-exclamation-square-fill me-2" style="font-size: 20px; color: #ff6600;"></i>
+                                    {% elif category == 'success' %}
+                                        <i class="bi bi-check-circle-fill me-2" style="font-size: 20px; color: #28a745;"></i>
+                                    {% endif %}
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
     <main class="flex-grow-1 {% block main_classes %}{% endblock main_classes %}">
         <div class="container text-center">
             <h3>{% block tname%}{% endblock tname%}</h3>

@@ -18,17 +18,6 @@
     <div class="container ">
         <div class="bg-primary d-flex justify-content-center p-3">
             <div class="col-md-6">
-
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-dismissible fade show mb-3 bg-white border" role="alert">
-                                <i class="bi bi-exclamation-square-fill text-danger me-2" style="font-size: 20px;"></i>{{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
                 <form method="post">
                     <div class="form-group ">
                         <label>Username</label>
