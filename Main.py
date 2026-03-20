@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 import requests
+import uuid
 
 
 
@@ -15,6 +16,7 @@ class Ptracker(db.Model):
     username = db.Column(db.String, unique=True)
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String, unique=True)
+    session_token = db.Column(db.String, unique=True)
 
 class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -83,17 +85,51 @@ def index():
 
 @app.route("/portfolio" , methods=["GET", "POST"])
 def portfolio():
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/login")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/login")
+
     theads = ["Coin","share", "profit", "value", "size", "ma 7d"]
     return render_template("portfolio.html", theads = theads)
 
 @app.route("/sign-in" , methods=["GET", "POST"])
 def sign_in():
+    if request.method == "POST":
+        email = request.form.get("input_email")
+        password = request.form.get("input_password")
+
+        # find user by email
+        user = Ptracker.query.filter_by(email=email).first()
+
+        # check if mail exist and pass is correct
+        if user and user.password == password:
+
+            #create token and store it
+            session_token = str(uuid.uuid4())
+            user.session_token = session_token
+            db.session.commit()
+
+            # create response with redirect
+            response = make_response(redirect("/portfolio"))
+
+            # set cookie
+            response.set_cookie("session_token", session_token , httponly=True, samesite="strict", max_age=60*60*24*365 )
+            flash("login successful!", "success")
+            return response
+        else:
+            # one generic message for better safety
+            flash("  Email or password is invalid!", "danger")
+            return render_template("signin.html")
+
     return render_template("signin.html")
 
 @app.route("/sign-up" , methods=["GET", "POST"])
 def sign_up():
-    #if request.method == "GET":
-        #return render_template("signup.html")
     if request.method == "POST":
         username = request.form.get("input_username")
         email = request.form.get("input_email")
