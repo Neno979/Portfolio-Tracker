@@ -57,6 +57,13 @@ with app.app_context():
 
 @app.route("/")
 def index():
+    session_token = request.cookies.get("session_token")
+
+    if session_token:
+        user = Ptracker.query.filter_by(session_token=session_token).first()
+        if user:
+            return redirect("/portfolio")
+
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
     url = "https://api.coinranking.com/v2/coins?limit=15"
@@ -85,6 +92,7 @@ def index():
 
 @app.route("/portfolio" , methods=["GET", "POST"])
 def portfolio():
+    # Get session_token from cookie
     session_token = request.cookies.get("session_token")
     if not session_token:
         flash("Please login first!", "warning")
@@ -95,7 +103,7 @@ def portfolio():
         return redirect("/login")
 
     theads = ["Coin","share", "profit", "value", "size", "ma 7d"]
-    return render_template("portfolio.html", theads = theads)
+    return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token)
 
 @app.route("/sign-in" , methods=["GET", "POST"])
 def sign_in():
@@ -109,7 +117,7 @@ def sign_in():
         # check if mail exist and pass is correct
         if user and user.password == password:
 
-            #create token and store it
+            # create session token and store it in DB
             session_token = str(uuid.uuid4())
             user.session_token = session_token
             db.session.commit()
@@ -122,7 +130,7 @@ def sign_in():
             flash("login successful!", "success")
             return response
         else:
-            # one generic message for better safety
+            # one generic message for both fields for better safety
             flash("  Email or password is invalid!", "danger")
             return render_template("signin.html")
 
@@ -163,6 +171,26 @@ def sign_up():
             flash("Account created successfully! You can sign in.", "success")
             return redirect("/sign-in")
     return render_template("signup.html")
+
+@app.route("/sign-out")
+def sign_out():
+
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+
+    # remove session_token from DB
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if user:
+        user.session_token = None
+        db.session.commit()
+
+    # create response with redirect
+    response = make_response(redirect("/"))
+
+    # delete cookie and redirect on index
+    response.delete_cookie("session_token")
+    flash("Sign out successful!", "success")
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True)
