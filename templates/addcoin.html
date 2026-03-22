@@ -31,19 +31,20 @@
                     </div>
                     <div class="form-group ">
                         <label>Quantity</label>
-                        <input name = "quantity" type="number" step="0.000001" class="form-control" placeholder="0.000001">
+                        <input name = "quantity" type="number" step="0.000001" class="form-control" placeholder="0.000001" required>
                         <small class="text-primary">How many coins did you buy?</small>
                     </div>
                     <div class="form-group ">
                         <label>Purchase price(total)</label>
-                            <input name="Purchase_price" type="number" step="0.01" class="form-control" placeholder="0.01" required>
+                            <input name="total_paid" type="number" step="0.01" class="form-control" placeholder="0.01" required>
                             <small class="text-primary">Total amount paid including all fees</small>
                     </div>
-
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary " type="submit">Submit&Add new</button>
+                    </div>
                     <div class="form-group">
                         <button class="btn btn-outline-primary " type="submit">Submit</button>
-                        <button class="btn btn-outline-primary " type="submit">Submit&Add new</button>
-                        <button class="btn btn-outline-danger " type="submit">Cancel</button>
+                        <a href="/portfolio" class="btn btn-outline-danger">Cancel</a>
                     </div>
                 </form>
             </div>

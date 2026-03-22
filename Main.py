@@ -1,3 +1,5 @@
+from enum import unique
+
 from flask import Flask, render_template, request, redirect, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -13,20 +15,29 @@ db = SQLAlchemy(app)
 
 class Ptracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True)
-    email = db.Column(db.String, unique=True)
-    password = db.Column(db.String, unique=True)
-    session_token = db.Column(db.String, unique=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, unique=False, nullable=False)
+    session_token = db.Column(db.String, unique=True, nullable=True)
 
 class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    rank = db.Column(db.Integer, unique=True)
-    name = db.Column(db.String, unique=True)
-    symbol = db.Column(db.String, unique=True)
-    price = db.Column(db.Float, unique=False)
-    mcap = db.Column(db.Float, unique=False)
-    volume = db.Column(db.Float, unique=False)
-    change = db.Column(db.Float, unique=False)
+    rank = db.Column(db.Integer, unique=True, nullable=False)
+    name = db.Column(db.String, unique=True, nullable=False)
+    symbol = db.Column(db.String, unique=True, nullable=False)
+    price = db.Column(db.Float, unique=False, nullable=False)
+    mcap = db.Column(db.Float, unique=False, nullable=False)
+    volume = db.Column(db.Float, unique=False, nullable=False)
+    change = db.Column(db.Float, unique=False, nullable=False)
+
+class Portfolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('ptracker.id'), nullable=False)
+    co_symbol = db.Column(db.String, unique=False, nullable=False)
+    co_name = db.Column(db.String, unique=False, nullable=False)
+    quantity = db.Column(db.Float, unique=False, nullable=False)
+    total_paid = db.Column(db.Float, unique=False, nullable=False)
+    user = db.relationship('Ptracker', backref=db.backref('portfolio', lazy=True))
 
     def format_value(self, value):
         if value >= 100_000_000_000:
@@ -66,7 +77,7 @@ def index():
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
-    url = "https://api.coinranking.com/v2/coins?limit=50"
+    url = "https://api.coinranking.com/v2/coins?limit=15"
     headers = {"x-access-token": API_KEY}
     response = requests.get(url, headers=headers)
     data = response.json()
