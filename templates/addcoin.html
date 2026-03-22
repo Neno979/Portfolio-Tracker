@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title%}add-coin{% endblock title%}
+
+{% block tname%}Add coin{% endblock tname%}
+
+{% block columns %}
+
+{% endblock columns %}
+
+{% block table %}
+
+{% endblock table %}
+
+{% block main_classes %}d-flex align-items-center{% endblock main_classes %}
+
+{% block form %}
+    <div class="container ">
+        <div class="bg-primary d-flex justify-content-center p-3">
+            <div class="col-md-6">
+                <form method="post">
+                    <div class="form-group ">
+                        <label>Coin name</label>
+                        <input name = "coin_name" type="text" class="form-control" placeholder="add first 2 letters to choose..">
+                    </div>
+                    <div class="form-group ">
+                        <label>Quantity</label>
+                        <input name = "quantity" type="number" step="0.000001" class="form-control" placeholder="0.000001">
+                        <small class="text-primary">How many coins did you buy?</small>
+                    </div>
+                    <div class="form-group ">
+                        <label>Purchase price(total)</label>
+                            <input name="Purchase_price" type="number" step="0.01" class="form-control" placeholder="0.01" required>
+                            <small class="text-primary">Total amount paid including all fees</small>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary " type="submit">Submit</button>
+                        <button class="btn btn-outline-primary " type="submit">Submit&Add new</button>
+                        <button class="btn btn-outline-danger " type="submit">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+{% endblock form %}

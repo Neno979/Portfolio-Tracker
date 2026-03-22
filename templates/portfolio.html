@@ -4,10 +4,13 @@
 
 {%block hmenu%}
     <a class="nav-link mt-2 mb-2" href="#">{{ username }}</a>
-    <a href="/sign-out" class="btn btn-outline-primary mr-2 mt-2 mb-2">Sign Out</a>
+    <a href="/sign-out" class="btn btn-outline-danger mr-2 mt-2 mb-2">Sign Out</a>
 {%endblock hmenu%}
 
-{% block tname%}User portfolio{% endblock tname%}
+{% block tname%}
+    My portfolio
+    <a href="/add-coin" class="btn btn-success btn-sm ms-3">+ Add Coin</a>
+{% endblock tname%}
 
 {% block columns %}
         {% for thead in theads %}

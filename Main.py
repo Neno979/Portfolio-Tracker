@@ -96,11 +96,11 @@ def portfolio():
     session_token = request.cookies.get("session_token")
     if not session_token:
         flash("Please login first!", "warning")
-        return redirect("/login")
+        return redirect("/sign-in")
     user = Ptracker.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
-        return redirect("/login")
+        return redirect("/sign-in")
 
     theads = ["Coin","share", "profit", "value", "size", "ma 7d"]
     return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token)
@@ -191,6 +191,10 @@ def sign_out():
     response.delete_cookie("session_token")
     flash("Sign out successful!", "success")
     return response
+
+@app.route("/add-coin", methods=["GET", "POST"])
+def add_coin():
+    return render_template("addcoin.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
