@@ -19,9 +19,15 @@
         <div class="bg-primary d-flex justify-content-center p-3">
             <div class="col-md-6">
                 <form method="post">
-                    <div class="form-group ">
-                        <label>Coin name</label>
-                        <input name = "coin_name" type="text" class="form-control" placeholder="add first 2 letters to choose..">
+                    <div class="form-group mb-3">
+                        <label class="text">Coin name</label>
+                            <input name="coin_symbol" type="text" class="form-control" list="coin-list" placeholder="Type to search (e.g., Bitco..,Ethe..).." required>
+                                <datalist id="coin-list">
+                                    {% for coin in coins %}
+                                        <option value="{{ coin.symbol }}">{{ coin.name }}</option>
+                                    {% endfor %}
+                                </datalist>
+                                <small class="text-primary">Start typing coin name to see available coins</small>
                     </div>
                     <div class="form-group ">
                         <label>Quantity</label>

@@ -66,7 +66,7 @@ def index():
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
-    url = "https://api.coinranking.com/v2/coins?limit=15"
+    url = "https://api.coinranking.com/v2/coins?limit=50"
     headers = {"x-access-token": API_KEY}
     response = requests.get(url, headers=headers)
     data = response.json()
@@ -194,7 +194,8 @@ def sign_out():
 
 @app.route("/add-coin", methods=["GET", "POST"])
 def add_coin():
-    return render_template("addcoin.html")
+    available_coins = Coin.query.order_by(Coin.rank).all()
+    return render_template("addcoin.html", coins = available_coins)
 
 if __name__ == "__main__":
     app.run(debug=True)
