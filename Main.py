@@ -248,7 +248,7 @@ def add_coin():
             flash("Please enter valid numbers!", "danger")
             return render_template("addcoin.html", username=user.username, coins=available_coins)
 
-        # Check if coin exists in database
+        # double check if coin exists in database
         coin = Coin.query.filter_by(symbol=coin_symbol).first()
 
         if not coin:
@@ -272,7 +272,7 @@ def add_coin():
         # Check which button was clicked
         action = request.form.get("action")
 
-        if action == "save_and_add":
+        if action == "Sub_and_add":
             flash(f"Added {quantity} {coin_symbol} (${price_per_coin:,.2f}/coin)! Add another transaction.", "success")
             return render_template("addcoin.html", username=user.username, coins=available_coins)
         else:
