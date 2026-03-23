@@ -205,7 +205,80 @@ def sign_out():
 
 @app.route("/add-coin", methods=["GET", "POST"])
 def add_coin():
+
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    # get all coins from DB for dropdown
     available_coins = Coin.query.order_by(Coin.rank).all()
+
+    if request.method == "POST":
+        coin_symbol = request.form.get("coin_symbol")
+        quantity = request.form.get("quantity")
+        total_paid = request.form.get("total_paid")
+
+        # double check if fields are filled
+        if not coin_symbol or not quantity or not total_paid:
+            flash("All fields are required!", "danger")
+            return render_template("addcoin.html", username=user.username, coins=available_coins)
+
+        coin_symbol = coin_symbol.upper().strip()
+
+        try:
+            quantity = float(quantity)
+            total_paid = float(total_paid)
+
+            # check if both are positive numbers
+            if quantity <= 0:
+                flash("Quantity must be greater than zero!", "danger")
+                return render_template("addcoin.html", username=user.username, coins=available_coins)
+
+            if total_paid <= 0:
+                flash("Total paid must be greater than zero!", "danger")
+                return render_template("addcoin.html", username=user.username, coins=available_coins)
+
+        except ValueError:
+            flash("Please enter valid numbers!", "danger")
+            return render_template("addcoin.html", username=user.username, coins=available_coins)
+
+        # Check if coin exists in database
+        coin = Coin.query.filter_by(symbol=coin_symbol).first()
+
+        if not coin:
+            flash(f"Coin {coin_symbol} not found in our database!", "danger")
+            return render_template("addcoin.html", username=user.username, coins=available_coins)
+
+        # Add to portfolio and save to DB
+        new_holding = Portfolio(
+            user_id=user.id,
+            co_symbol=coin_symbol,
+            co_name=coin.name,
+            quantity=quantity,
+            total_paid=total_paid
+        )
+        db.session.add(new_holding)
+        db.session.commit()
+
+        # Calculate price per coin for display
+        price_per_coin = total_paid / quantity
+
+        # Check which button was clicked
+        action = request.form.get("action")
+
+        if action == "save_and_add":
+            flash(f"Added {quantity} {coin_symbol} (${price_per_coin:,.2f}/coin)! Add another transaction.", "success")
+            return render_template("addcoin.html", username=user.username, coins=available_coins)
+        else:
+            flash(f"Successfully added {quantity} {coin_symbol} to your portfolio!", "success")
+            return redirect("/portfolio")
+
     return render_template("addcoin.html", coins = available_coins)
 
 if __name__ == "__main__":
