@@ -22,13 +22,13 @@
                 {% for item in portfolio %}
                     <tr>
                         <td>{{ item.co_symbol }}</td>
-                        <td>${{ "{:,.2f}".format(item.buy_price) }}</td>
+                        <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
                         <td>${{ "{:,.2f}".format(item.price) }}</td>
                         <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
                             ${{ "{:,.2f}".format(item.profit_loss) }}
                         </td>
                         <td>${{ "{:,.2f}".format(item.value) }}</td>
-                        <td>{{ "%.6f"|format(item.quantity) }}</td>
+                        <td>{{ "%.3f"|format(item.quantity) }}</td>
                     </tr>
                 {% endfor %}
             {% endif %}

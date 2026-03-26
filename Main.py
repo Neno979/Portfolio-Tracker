@@ -1,5 +1,3 @@
-from enum import unique
-
 from flask import Flask, render_template, request, redirect, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -113,23 +111,41 @@ def portfolio():
         flash("Please login first!", "warning")
         return redirect("/sign-in")
     portfolio_data = []
+
     # Get user's all portfolio transactions
     holdings = Portfolio.query.filter_by(user_id=user.id).all()
 
+    #initiate dictionary for storing all data
+    coin_data ={}
     for holding in holdings:
-        current_coin = Coin.query.filter_by(symbol=holding.co_symbol).first()
+        symbol = holding.co_symbol
+        #add values for each coin first time in loop as dictionary in dictionary
+        if symbol not in coin_data:
+            coin_data[symbol] = {
+                "total_quantity": 0,
+                "total_paid": 0,
+            }
+        coin_data[symbol]["total_quantity"] += holding.quantity
+        coin_data[symbol]["total_paid"] += holding.total_paid
+
+    #initiate list for storing final data
+    portfolio_data = []
+
+    for symbol, data in coin_data.items():
+
+        current_coin = Coin.query.filter_by(symbol=symbol).first()
         if current_coin:
-            buy_price = holding.total_paid / holding.quantity
-            current_value = holding.total_paid * current_coin.price
-            profit_loss = current_value - holding.total_paid
+            avg_buy_price = data["total_paid"] / data["total_quantity"]
+            current_value = data["total_quantity"] * current_coin.price
+            profit_loss = current_value - data["total_paid"]
+            total_quantity = data["total_quantity"]
             portfolio_data.append({
-                "id": holding.id,
-                "co_symbol": holding.co_symbol,
-                "buy_price": buy_price,
+                "co_symbol": symbol,
+                "avg_buy_price": avg_buy_price,
                 "price": current_coin.price,
                 "profit_loss": profit_loss,
-                "value": holding.total_paid,
-                "quantity": holding.quantity,
+                "value": current_value,
+                "quantity": total_quantity,
             })
 
     theads = ["Coin", "buy price", "price", "profit/loss", "value", "quantity"]
