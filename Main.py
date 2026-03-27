@@ -1,3 +1,5 @@
+from enum import unique
+
 from flask import Flask, render_template, request, redirect, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -66,12 +68,7 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    session_token = request.cookies.get("session_token")
 
-    if session_token:
-        user = Ptracker.query.filter_by(session_token=session_token).first()
-        if user:
-            return redirect("/portfolio")
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
@@ -96,6 +93,13 @@ def index():
         db.session.add(new_coin)
 
     db.session.commit()
+
+    session_token = request.cookies.get("session_token")
+
+    if session_token:
+        user = Ptracker.query.filter_by(session_token=session_token).first()
+        if user:
+            return redirect("/portfolio")
 
     return render_template("index.html", theads = theads, coins = coins)
 
