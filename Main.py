@@ -72,7 +72,7 @@ def index():
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
-    url = "https://api.coinranking.com/v2/coins?limit=15"
+    url = "https://api.coinranking.com/v2/coins?limit=100"
     headers = {"x-access-token": API_KEY}
     response = requests.get(url, headers=headers)
     data = response.json()
@@ -134,10 +134,12 @@ def portfolio():
 
     #initiate list for storing final data
     portfolio_data = []
-
+    total_value = 0
+    total_paid_all = 0
+    profit_loss_all = 0
     for symbol, data in coin_data.items():
-
         current_coin = Coin.query.filter_by(symbol=symbol).first()
+        current_value = 0
         if current_coin:
             avg_buy_price = data["total_paid"] / data["total_quantity"]
             current_value = data["total_quantity"] * current_coin.price
@@ -151,8 +153,11 @@ def portfolio():
                 "value": current_value,
                 "quantity": total_quantity,
             })
-
-    theads = ["Coin", "buy price", "price", "profit/loss", "value", "quantity"]
+        total_value += current_value
+        total_paid_all += data["total_paid"]
+    profit_loss_all = total_paid_all - total_value
+    print (total_value, total_paid_all, profit_loss_all)
+    theads = ["Coin", "buy price", "current price", "profit /loss", "value", "quantity"]
     return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data)
 
 @app.route("/sign-in" , methods=["GET", "POST"])

@@ -16,7 +16,7 @@
     {% endblock columns %}
         {% block table %}
             {% if coins %}
-                {% for coin in coins %}
+                {% for coin in coins[:15] %}
                     <tr>
                         <th scope="row">{{ coin.rank }}</th>
                         <td>
