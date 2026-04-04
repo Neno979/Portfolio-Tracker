@@ -114,7 +114,6 @@ def portfolio():
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    portfolio_data = []
 
     # Get user's all portfolio transactions
     holdings = Portfolio.query.filter_by(user_id=user.id).all()
@@ -136,7 +135,6 @@ def portfolio():
     portfolio_data = []
     total_value = 0
     total_paid_all = 0
-    profit_loss_all = 0
     for symbol, data in coin_data.items():
         current_coin = Coin.query.filter_by(symbol=symbol).first()
         current_value = 0
@@ -155,10 +153,12 @@ def portfolio():
             })
         total_value += current_value
         total_paid_all += data["total_paid"]
-    profit_loss_all = total_paid_all - total_value
-    print (total_value, total_paid_all, profit_loss_all)
+    profit_loss_all = total_value - total_paid_all
+    profit_loss_perc = (profit_loss_all)/total_paid_all * 100
+    print (total_value, total_paid_all, profit_loss_all, profit_loss_perc)
     theads = ["Coin", "buy price", "current price", "profit /loss", "value", "quantity"]
-    return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data)
+    return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
+                           total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc)
 
 @app.route("/sign-in" , methods=["GET", "POST"])
 def sign_in():
