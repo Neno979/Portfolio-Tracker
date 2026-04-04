@@ -12,6 +12,41 @@
     <a href="/add-coin" class="btn btn-success btn-sm ms-3">+ Add Coin</a>
 {% endblock tname%}
 
+{% block medium%}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center" style="background-color: #d2e3f8">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Portfolio Value</h6>
+                <h4 class="card-title">${{ "{:,.2f}".format(total_v) }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center" style="background-color: #d2e3f8">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Profit/Loss</h6>
+                <h4 class="card-title {% if total_pl > 0 %}text-success{% else %}text-danger{% endif %}">
+                    ${{ "{:,.2f}".format(total_pl) }}
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center" style="background-color: #d2e3f8">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Return</h6>
+                <h4 class="card-title {% if total_pl_perc > 0 %}text-success{% else %}text-danger{% endif %}">
+                    {{ "%.2f"|format(total_pl_perc) }}%
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock medium%}
+
 {% block columns %}
         {% for thead in theads %}
             <th>{{ thead }}</th>
