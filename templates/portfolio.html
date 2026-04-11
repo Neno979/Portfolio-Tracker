@@ -56,7 +56,11 @@
             {% if portfolio %}
                 {% for item in portfolio %}
                     <tr>
-                        <td>{{ item.co_symbol }}</td>
+                        <td>
+                            <a href="/overview" style="text-decoration: none; color: inherit;">
+                                <strong>{{ item.co_symbol }}</strong>
+                            </a>
+                        </td>
                         <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
                         <td>${{ "{:,.2f}".format(item.price) }}</td>
                         <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">

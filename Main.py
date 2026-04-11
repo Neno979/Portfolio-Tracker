@@ -325,5 +325,9 @@ def add_coin():
 
     return render_template("addcoin.html", coins = available_coins)
 
+@app.route("/overview")
+def overview():
+    return render_template("overview.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
