@@ -48,27 +48,28 @@
 {% endblock medium%}
 
 {% block columns %}
-        {% for thead in theads %}
-            <th>{{ thead }}</th>
+    {% for thead in theads %}
+        <th>{{ thead }}</th>
+    {% endfor %}
+{% endblock columns %}
+
+{% block table %}
+    {% if portfolio %}
+        {% for item in portfolio %}
+            <tr>
+                <td>
+                    <a href="/overview/{{ item.co_symbol }}" style="text-decoration: none; color: inherit;">
+                    <strong>{{ item.co_symbol }}</strong>
+                    </a>
+                </td>
+                <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
+                <td>${{ "{:,.2f}".format(item.price) }}</td>
+                <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
+                    ${{ "{:,.2f}".format(item.profit_loss) }}
+                </td>
+                <td>${{ "{:,.2f}".format(item.value) }}</td>
+                <td>{{ "%.3f"|format(item.quantity) }}</td>
+            </tr>
         {% endfor %}
-    {% endblock columns %}
-        {% block table %}
-            {% if portfolio %}
-                {% for item in portfolio %}
-                    <tr>
-                        <td>
-                            <a href="/overview" style="text-decoration: none; color: inherit;">
-                                <strong>{{ item.co_symbol }}</strong>
-                            </a>
-                        </td>
-                        <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
-                        <td>${{ "{:,.2f}".format(item.price) }}</td>
-                        <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
-                            ${{ "{:,.2f}".format(item.profit_loss) }}
-                        </td>
-                        <td>${{ "{:,.2f}".format(item.value) }}</td>
-                        <td>{{ "%.3f"|format(item.quantity) }}</td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
-        {% endblock table %}
+    {% endif %}
+{% endblock table %}

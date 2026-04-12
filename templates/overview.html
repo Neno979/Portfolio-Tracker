@@ -2,18 +2,37 @@
 
 {% block title%}overview{% endblock title%}
 
-{% block tname%}coin overview{% endblock tname%}
+{%block hmenu%}
+    <a class="nav-link mt-2 mb-2" href="#">{{ username }}</a>
+    <a href="/sign-out" class="btn btn-outline-danger mr-2 mt-2 mb-2">Sign Out</a>
+{%endblock hmenu%}
+
+{% block tname%}
+    Transaction overview- {{ co_symbol }}
+{% endblock tname%}
+
+{% block medium%}
+
+{% endblock medium%}
 
 {% block columns %}
-
+    {% for thead in theads %}
+        <th>{{ thead }}</th>
+    {% endfor %}
 {% endblock columns %}
 
 {% block table %}
-
+    {% for tx in transactions %}
+        <tr>
+            <td>{{ "%.6f"|format(tx.quantity) }}</td>
+            <td>${{ "{:,.2f}".format(tx.total_paid) }}</td>
+            <td>buy</td>
+            <td>
+                <a href="/edit-transaction/{{ tx.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a href="/delete-transaction/{{ tx.id }}"
+                   class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('Delete this transaction?')">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
 {% endblock table %}
-
-{% block main_classes %}d-flex align-items-center{% endblock main_classes %}
-
-{% block form %}
-
-{% endblock form %}

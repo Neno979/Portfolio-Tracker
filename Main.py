@@ -325,9 +325,25 @@ def add_coin():
 
     return render_template("addcoin.html", coins = available_coins)
 
-@app.route("/overview")
-def overview():
-    return render_template("overview.html")
+@app.route("/overview/<symbol>")
+def overview(symbol):
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    # Get all transactions for this coin
+    transactions = (Portfolio.query.filter_by
+        (user_id=user.id, co_symbol=symbol.upper()).order_by
+            (Portfolio.id.desc()).all())
+
+    theads = ["quantity", "paid", "buy/sell", "action" ]
+    return render_template("overview.html", theads=theads, username=user.username, session_token=session_token, transactions=transactions, co_symbol=symbol.upper() )
 
 if __name__ == "__main__":
     app.run(debug=True)
