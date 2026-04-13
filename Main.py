@@ -323,7 +323,7 @@ def add_coin():
             flash(f"Successfully added {quantity} {coin_symbol} to your portfolio!", "success")
             return redirect("/portfolio")
 
-    return render_template("addcoin.html", coins = available_coins)
+    return render_template("addcoin.html", coins = available_coins, username=user.username)
 
 @app.route("/overview/<symbol>")
 def overview(symbol):
