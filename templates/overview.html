@@ -8,10 +8,81 @@
 {%endblock hmenu%}
 
 {% block tname%}
-    Transaction overview- {{ co_symbol }}
+    {{ co_symbol }} - overview
 {% endblock tname%}
 
 {% block medium%}
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Profit/Loss</h6>
+                    <h4 class="{% if profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
+                        ${{ "{:,.2f}".format(profit_loss) }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Return</h6>
+                    <h4 class="{% if profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
+                        %{{ "{:,.2f}".format(profit_loss_pct) }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Value</h6>
+                    <h4>${{ "%.2f"|format(current_value) }} </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Holdings</h6>
+                    <h4>{{ "%.2f"|format(total_quantity) }} </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Average Cost</h6>
+                    <h4>${{ "{:,.2f}".format(avg_price) }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Current Price</h6>
+                    <h4>${{ "{:,.2f}".format(current_price) }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Portfolio share</h6>
+                    <h4>%{{ "{:,.2f}".format(current_price) }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center" style="background-color: #d2e3f8">
+                <div class="card-body">
+                    <h6 class="text-muted">Buy quantity</h6>
+                    <h4>{{ "{:,.2f}".format(current_price) }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock medium%}
 
@@ -24,7 +95,7 @@
 {% block table %}
     {% for tx in transactions %}
         <tr>
-            <td>{{ "%.6f"|format(tx.quantity) }}</td>
+            <td>{{ "%.2f"|format(tx.quantity) }}</td>
             <td>${{ "{:,.2f}".format(tx.total_paid) }}</td>
             <td>buy</td>
             <td>

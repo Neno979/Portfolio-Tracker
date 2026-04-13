@@ -342,8 +342,22 @@ def overview(symbol):
         (user_id=user.id, co_symbol=symbol.upper()).order_by
             (Portfolio.id.desc()).all())
 
+    # Get current price from DB
+    current_coin = Coin.query.filter_by(symbol=symbol.upper()).first()
+
+    # Calculate totals
+    total_quantity = sum(t.quantity for t in transactions)
+    total_paid = sum(t.total_paid for t in transactions)
+    avg_price = total_paid / total_quantity
+    current_value = total_quantity * current_coin.price
+    profit_loss = current_value - total_paid
+    profit_loss_pct = (profit_loss / total_paid) * 100
+
     theads = ["quantity", "paid", "buy/sell", "action" ]
-    return render_template("overview.html", theads=theads, username=user.username, session_token=session_token, transactions=transactions, co_symbol=symbol.upper() )
+    return render_template("overview.html", theads=theads, username=user.username,
+        session_token=session_token, transactions=transactions, co_symbol=symbol.upper(),
+        total_quantity=total_quantity,total_paid=total_paid, avg_price=avg_price, current_value=current_value,
+        profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price)
 
 if __name__ == "__main__":
     app.run(debug=True)
