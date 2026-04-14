@@ -337,10 +337,22 @@ def overview(symbol):
         flash("Please login first!", "warning")
         return redirect("/sign-in")
 
+    # Get all transactions for this user
+    all_transactions = (Portfolio.query.filter_by
+                    (user_id=user.id).order_by
+                        (Portfolio.id.desc()).all())
+    print(all_transactions)
+
     # Get all transactions for this coin
     transactions = (Portfolio.query.filter_by
         (user_id=user.id, co_symbol=symbol.upper()).order_by
             (Portfolio.id.desc()).all())
+    total_value = 0
+    for tr in all_transactions:
+        tr_coin = Coin.query.filter_by(symbol=tr.co_symbol).first()
+        value = tr.quantity * tr_coin.price
+        total_value += value
+        print(total_value)
 
     # Get current price from DB
     current_coin = Coin.query.filter_by(symbol=symbol.upper()).first()
@@ -352,12 +364,15 @@ def overview(symbol):
     current_value = total_quantity * current_coin.price
     profit_loss = current_value - total_paid
     profit_loss_pct = (profit_loss / total_paid) * 100
+    share = (current_value / total_value) * 100
+    realized_gain = 0
 
     theads = ["quantity", "paid", "buy/sell", "action" ]
     return render_template("overview.html", theads=theads, username=user.username,
         session_token=session_token, transactions=transactions, co_symbol=symbol.upper(),
         total_quantity=total_quantity,total_paid=total_paid, avg_price=avg_price, current_value=current_value,
-        profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price)
+        profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price,
+        share=share, realized_gain=realized_gain)
 
 if __name__ == "__main__":
     app.run(debug=True)

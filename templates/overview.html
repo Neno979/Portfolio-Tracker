@@ -14,7 +14,7 @@
 {% block medium%}
 
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Profit/Loss</h6>
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Return</h6>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Total Value</h6>
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Total Holdings</h6>
@@ -50,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Average Cost</h6>
@@ -58,7 +58,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Current Price</h6>
@@ -66,19 +66,19 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
                     <h6 class="text-muted">Portfolio share</h6>
-                    <h4>%{{ "{:,.2f}".format(current_price) }}</h4>
+                    <h4>%{{ "{:,.2f}".format(share) }}</h4>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3 mb-3">
             <div class="card text-center" style="background-color: #d2e3f8">
                 <div class="card-body">
-                    <h6 class="text-muted">Buy quantity</h6>
-                    <h4>{{ "{:,.2f}".format(current_price) }}</h4>
+                    <h6 class="text-muted">Realized gain</h6>
+                    <h4>${{ "{:,.2f}".format(realized_gain) }}</h4>
                 </div>
             </div>
         </div>
