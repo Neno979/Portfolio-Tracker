@@ -20,6 +20,15 @@ class Ptracker(db.Model):
     password = db.Column(db.String, unique=False, nullable=False)
     session_token = db.Column(db.String, unique=True, nullable=True)
 
+class Portfolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('ptracker.id'), nullable=False)
+    co_symbol = db.Column(db.String, unique=False, nullable=False)
+    co_name = db.Column(db.String, unique=False, nullable=False)
+    quantity = db.Column(db.Float, unique=False, nullable=False)
+    total_paid = db.Column(db.Float, unique=False, nullable=False)
+    user = db.relationship('Ptracker', backref=db.backref('portfolio', lazy=True))
+
 class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rank = db.Column(db.Integer, unique=True, nullable=False)
@@ -30,14 +39,7 @@ class Coin(db.Model):
     volume = db.Column(db.Float, unique=False, nullable=False)
     change = db.Column(db.Float, unique=False, nullable=False)
 
-class Portfolio(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('ptracker.id'), nullable=False)
-    co_symbol = db.Column(db.String, unique=False, nullable=False)
-    co_name = db.Column(db.String, unique=False, nullable=False)
-    quantity = db.Column(db.Float, unique=False, nullable=False)
-    total_paid = db.Column(db.Float, unique=False, nullable=False)
-    user = db.relationship('Ptracker', backref=db.backref('portfolio', lazy=True))
+
 
     def format_value(self, value):
         if value >= 100_000_000_000:
@@ -46,7 +48,7 @@ class Portfolio(db.Model):
             return f"{value / 1_000_000_000:.2f}B"
         elif value >= 100_000:
             return f"{value / 1_000_000:.2f}M"
-        elif value >= 100:
+        if value >= 100:
             return f"{value / 1_000:.2f}k"
         else:
             return f"{value:.2f}"
@@ -66,18 +68,19 @@ class Portfolio(db.Model):
 with app.app_context():
     db.create_all()
 
+#app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 @app.route("/")
 def index():
 
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
-    API_KEY = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
+    api_key = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
     url = "https://api.coinranking.com/v2/coins?limit=100"
-    headers = {"x-access-token": API_KEY}
+    headers = {"x-access-token": api_key}
     response = requests.get(url, headers=headers)
     data = response.json()
     coins_data = data['data']['coins']
-    coins = Coin.query.order_by(Coin.rank).all()
 
     Coin.query.delete()
     for coin_data in coins_data:
@@ -94,13 +97,14 @@ def index():
 
     db.session.commit()
 
+    coins = Coin.query.order_by(Coin.rank).all()
+
     session_token = request.cookies.get("session_token")
 
     if session_token:
         user = Ptracker.query.filter_by(session_token=session_token).first()
         if user:
             return redirect("/portfolio")
-
     return render_template("index.html", theads = theads, coins = coins)
 
 @app.route("/portfolio" , methods=["GET", "POST"])
@@ -154,8 +158,7 @@ def portfolio():
         total_value += current_value
         total_paid_all += data["total_paid"]
     profit_loss_all = total_value - total_paid_all
-    profit_loss_perc = (profit_loss_all)/total_paid_all * 100
-    print (total_value, total_paid_all, profit_loss_all, profit_loss_perc)
+    profit_loss_perc = (profit_loss_all/total_paid_all) * 100
     theads = ["Coin", "buy price", "current price", "profit /loss", "value", "quantity"]
     return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
                            total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc)

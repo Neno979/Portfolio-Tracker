@@ -25,17 +25,18 @@
                                 <div>{{ coin.symbol }}</div>
                                 <div>${{ coin.formatted_price }}</div>
                             </div>
+
                     <!-- Desktop: Name and price on same line -->
                             <span class="d-none d-md-inline">
                                 {{ coin.symbol }} ${{ "{:,.2f}".format(coin.price) }}
                             </span>
                         </td>
                         <td>
-                            <span class="d-md-none small">${{ coin.formatted_mcap }}</span>
+                            <span class="d-md-none ">${{ coin.formatted_mcap }}</span>
                             <span class="d-none d-md-inline">${{ "{:,.2f}".format(coin.mcap / 1000000000) }}B</span>
                         </td>
                         <td>
-                            <span class="d-md-none small">${{ coin.formatted_volume }}</span>
+                            <span class="d-md-none ">${{ coin.formatted_volume }}</span>
                             <span class="d-none d-md-inline">${{ "{:,.2f}".format(coin.volume / 1000000000) }}B</span>
                         </td>
                         <td class="{% if coin.change > 0 %}text-success{% else %}text-danger{% endif %}">
