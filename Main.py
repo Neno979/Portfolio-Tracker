@@ -353,7 +353,6 @@ def overview(symbol):
         value = tr.quantity * tr_coin.price
         total_value += value
         print(total_value)
-
     # Get current price from DB
     current_coin = Coin.query.filter_by(symbol=symbol.upper()).first()
 
@@ -373,6 +372,26 @@ def overview(symbol):
         total_quantity=total_quantity,total_paid=total_paid, avg_price=avg_price, current_value=current_value,
         profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price,
         share=share, realized_gain=realized_gain)
+
+@app.route("/delete-transaction/<transaction_id>")
+def delete_transaction(transaction_id):
+
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    delete_item = Portfolio.query.filter_by(id=transaction_id).first()
+    print(delete_item)
+    db.session.delete(delete_item)
+    db.session.commit()
+
+    return redirect("/portfolio")
 
 if __name__ == "__main__":
     app.run(debug=True)
