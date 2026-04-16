@@ -1,6 +1,6 @@
 from enum import unique
 
-from flask import Flask, render_template, request, redirect, flash, make_response
+from flask import Flask, render_template, request, redirect, flash, make_response, url_for
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import uuid
@@ -391,10 +391,12 @@ def delete_transaction(transaction_id):
 
     delete_item = Portfolio.query.filter_by(id=transaction_id).first()
     print(delete_item)
+    print(delete_item.co_symbol)
+    symbol = delete_item.co_symbol
     db.session.delete(delete_item)
     db.session.commit()
 
-    return redirect("/portfolio")
+    return redirect(url_for("overview", symbol=symbol))
 
 if __name__ == "__main__":
     app.run(debug=True)
