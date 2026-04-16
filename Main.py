@@ -350,6 +350,8 @@ def overview(symbol):
     transactions = (Portfolio.query.filter_by
         (user_id=user.id, co_symbol=symbol.upper()).order_by
             (Portfolio.id.desc()).all())
+    t_count = len(transactions)
+    print(t_count)
     total_value = 0
     for tr in all_transactions:
         tr_coin = Coin.query.filter_by(symbol=tr.co_symbol).first()
@@ -374,10 +376,10 @@ def overview(symbol):
         session_token=session_token, transactions=transactions, co_symbol=symbol.upper(),
         total_quantity=total_quantity,total_paid=total_paid, avg_price=avg_price, current_value=current_value,
         profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price,
-        share=share, realized_gain=realized_gain)
+        share=share, realized_gain=realized_gain, t_count=t_count)
 
-@app.route("/delete-transaction/<transaction_id>")
-def delete_transaction(transaction_id):
+@app.route("/delete-transaction/<transaction_id>/<t_count>")
+def delete_transaction(transaction_id, t_count):
 
     # Get session_token from cookie
     session_token = request.cookies.get("session_token")
@@ -392,11 +394,15 @@ def delete_transaction(transaction_id):
     delete_item = Portfolio.query.filter_by(id=transaction_id).first()
     print(delete_item)
     print(delete_item.co_symbol)
+    print(t_count)
     symbol = delete_item.co_symbol
     db.session.delete(delete_item)
     db.session.commit()
 
-    return redirect(url_for("overview", symbol=symbol))
+    if t_count == "1":
+        return redirect("/portfolio")
+    else:
+        return redirect(url_for("overview", symbol=symbol))
 
 if __name__ == "__main__":
     app.run(debug=True)

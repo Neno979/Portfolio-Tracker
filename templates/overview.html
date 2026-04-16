@@ -100,7 +100,7 @@
             <td>buy</td>
             <td>
                 <a href="/edit-transaction/{{ tx.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                <a href="/delete-transaction/{{ tx.id }}"
+                <a href="/delete-transaction/{{ tx.id }}/{{ t_count }}"
                    class="btn btn-sm btn-outline-danger"
                    onclick="return confirm('Delete this transaction?')">Delete</a>
             </td>
