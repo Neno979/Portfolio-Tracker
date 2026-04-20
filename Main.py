@@ -404,5 +404,21 @@ def delete_transaction(transaction_id, t_count):
     else:
         return redirect(url_for("overview", symbol=symbol))
 
+@app.route("/edit-transaction/<transaction_id>")
+def edit_transaction(transaction_id):
+
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    edit_item = Portfolio.query.filter_by(id=transaction_id).first()
+    return render_template("edittransaction.html", username=user.username, session_token=session_token,)
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title%}edit-transaction{% endblock title%}
+
+{% block tname%}Edit transaction{% endblock tname%}
+
+{%block hmenu%}
+    <a class="nav-link mt-2 mb-2" href="#">{{ username }}</a>
+    <a href="/sign-out" class="btn btn-outline-danger mr-2 mt-2 mb-2">Sign Out</a>
+{%endblock hmenu%}
+
+{% block columns %}
+
+{% endblock columns %}
+
+{% block table %}
+
+{% endblock table %}
+
+{% block main_classes %}d-flex align-items-center{% endblock main_classes %}
+
+{% block form %}
+    <div class="container ">
+        <div class="bg-primary d-flex justify-content-center p-3">
+            <div class="col-md-6">
+                <form method="post">
+                    <div class="form-group mb-3">
+                        <label class="text">Coin name</label>
+                            <input name="coin_symbol" type="text" class="form-control" list="coin-list" placeholder="Type to search (e.g., Bitco..,Ethe..).." required>
+                                <datalist id="coin-list">
+                                    {% for coin in coins %}
+                                        <option value="{{ coin.symbol }}">{{ coin.name }}</option>
+                                    {% endfor %}
+                                </datalist>
+                                <small class="text-primary">Start typing coin name to see available coins</small>
+                    </div>
+                    <div class="form-group ">
+                        <label>Quantity</label>
+                        <input name = "quantity" type="number" step="0.000001" class="form-control" placeholder="0.000001" required>
+                        <small class="text-primary">How many coins did you buy?</small>
+                    </div>
+                    <div class="form-group ">
+                        <label>Purchase price(total)</label>
+                            <input name="total_paid" type="number" step="0.01" class="form-control" placeholder="0.01" required>
+                            <small class="text-primary">Total amount paid including all fees</small>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary " name="action" type="submit" value="Submit">Submit</button>
+                        <a href="/portfolio" class="btn btn-outline-danger">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+{% endblock form %}
