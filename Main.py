@@ -404,7 +404,7 @@ def delete_transaction(transaction_id, t_count):
     else:
         return redirect(url_for("overview", symbol=symbol))
 
-@app.route("/edit-transaction/<transaction_id>")
+@app.route("/edit-transaction/<transaction_id>", methods=["GET", "POST"])
 def edit_transaction(transaction_id):
 
     # Get session_token from cookie
@@ -418,7 +418,15 @@ def edit_transaction(transaction_id):
         return redirect("/sign-in")
 
     edit_item = Portfolio.query.filter_by(id=transaction_id).first()
-    return render_template("edittransaction.html", username=user.username, session_token=session_token,)
+
+    if request.method == "POST":
+        edit_item.quantity = request.form["quantity"]
+        edit_item.total_paid = request.form["total_paid"]
+        db.session.commit()
+        flash(f"transaction successfully changed!", "success")
+        return redirect(url_for("overview", symbol=edit_item.co_symbol))
+
+    return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 
 if __name__ == "__main__":
     app.run(debug=True)

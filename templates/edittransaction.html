@@ -25,23 +25,18 @@
             <div class="col-md-6">
                 <form method="post">
                     <div class="form-group mb-3">
-                        <label class="text">Coin name</label>
-                            <input name="coin_symbol" type="text" class="form-control" list="coin-list" placeholder="Type to search (e.g., Bitco..,Ethe..).." required>
-                                <datalist id="coin-list">
-                                    {% for coin in coins %}
-                                        <option value="{{ coin.symbol }}">{{ coin.name }}</option>
-                                    {% endfor %}
-                                </datalist>
-                                <small class="text-primary">Start typing coin name to see available coins</small>
+                        <label class="text">Coin symbol</label>
+                            <input name=type="text" class="form-control" value="{{ edit_item.co_symbol}}" disabled>
+                                <small class="text-primary">It is not possible to edit</small>
                     </div>
                     <div class="form-group ">
                         <label>Quantity</label>
-                        <input name = "quantity" type="number" step="0.000001" class="form-control" placeholder="0.000001" required>
+                        <input name = "quantity" type="number" step="0.000001" class="form-control" value="{{ edit_item.quantity}}" required>
                         <small class="text-primary">How many coins did you buy?</small>
                     </div>
                     <div class="form-group ">
                         <label>Purchase price(total)</label>
-                            <input name="total_paid" type="number" step="0.01" class="form-control" placeholder="0.01" required>
+                            <input name="total_paid" type="number" step="0.01" class="form-control" value="{{ edit_item.total_paid}}" required>
                             <small class="text-primary">Total amount paid including all fees</small>
                     </div>
                     <div class="form-group">
