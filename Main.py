@@ -263,8 +263,18 @@ def add_coin():
         flash("Please login first!", "warning")
         return redirect("/sign-in")
 
+    # get all unique coins from user portfolio table
+    unique_coins=Portfolio.query.filter_by(user_id=user.id).group_by(Portfolio.co_symbol).order_by(Portfolio.id).all()
+    coin_number = len(unique_coins)
+    print(coin_number)
+    for coin in unique_coins:
+        print(coin.co_symbol)
+    if coin_number == 50:
+        flash("maximum coins reached!", "warning")
+        return redirect("/portfolio")
+
     # get all coins from DB for dropdown
-    available_coins = Coin.query.order_by(Coin.rank).all()
+    available_coins = Coin.query.order_by(Coin.rank).limit(50).all()
 
     if request.method == "POST":
         coin_symbol = request.form.get("coin_symbol")
