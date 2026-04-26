@@ -122,6 +122,8 @@ def portfolio():
     # Get user's all portfolio transactions
     holdings = Portfolio.query.filter_by(user_id=user.id).all()
 
+
+
     #initiate dictionary for storing all data
     coin_data ={}
     for holding in holdings:
@@ -157,8 +159,13 @@ def portfolio():
             })
         total_value += current_value
         total_paid_all += data["total_paid"]
-    profit_loss_all = total_value - total_paid_all
-    profit_loss_perc = (profit_loss_all/total_paid_all) * 100
+    if total_paid_all == 0:
+        profit_loss_all = 0
+        profit_loss_perc = 0
+    else:
+        profit_loss_all = total_value - total_paid_all
+        profit_loss_perc = (profit_loss_all/total_paid_all) * 100
+
     theads = ["Coin", "buy price", "current price", "profit /loss", "value", "quantity"]
     return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
                            total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc)
