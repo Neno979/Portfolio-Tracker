@@ -1,17 +1,12 @@
 from enum import unique
 
-from flask import Flask, render_template, request, redirect, flash, make_response, url_for
+from flask import Flask, render_template, request, redirect, flash, make_response, url_for, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import uuid
 
-
-
-
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
-app.config['SECRET_KEY'] = 'Gigaj_Kokana'
-db = SQLAlchemy(app)
+main = Blueprint('main', __name__)
+db = SQLAlchemy()
 
 class Ptracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,8 +34,6 @@ class Coin(db.Model):
     volume = db.Column(db.Float, unique=False, nullable=False)
     change = db.Column(db.Float, unique=False, nullable=False)
 
-
-
     def format_value(self, value):
         if value >= 100_000_000_000:
             return f"{value / 1_000_000_000_000:.2f}T"
@@ -65,12 +58,19 @@ class Coin(db.Model):
     def formatted_volume(self):
         return self.format_value(self.volume)
 
-with app.app_context():
-    db.create_all()
+def create_app():
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
+    app.config['SECRET_KEY'] = 'Gigaj_Kokana'
+    db.init_app(app)
+    with app.app_context():
+        db.create_all()
+    app.register_blueprint(main)
+    return app
 
 #app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-@app.route("/")
+@main.route("/")
 def index():
 
 
@@ -107,7 +107,7 @@ def index():
             return redirect("/portfolio")
     return render_template("index.html", theads = theads, coins = coins)
 
-@app.route("/portfolio" , methods=["GET", "POST"])
+@main.route("/portfolio" , methods=["GET", "POST"])
 def portfolio():
     # Get session_token from cookie
     session_token = request.cookies.get("session_token")
@@ -170,7 +170,7 @@ def portfolio():
     return render_template("portfolio.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
                            total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc)
 
-@app.route("/sign-in" , methods=["GET", "POST"])
+@main.route("/sign-in" , methods=["GET", "POST"])
 def sign_in():
     if request.method == "POST":
         email = request.form.get("input_email")
@@ -201,7 +201,7 @@ def sign_in():
 
     return render_template("signin.html")
 
-@app.route("/sign-up" , methods=["GET", "POST"])
+@main.route("/sign-up" , methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
         username = request.form.get("input_username")
@@ -237,7 +237,7 @@ def sign_up():
             return redirect("/sign-in")
     return render_template("signup.html")
 
-@app.route("/sign-out")
+@main.route("/sign-out")
 def sign_out():
 
     # Get session_token from cookie
@@ -257,7 +257,7 @@ def sign_out():
     flash("Sign out successful!", "success")
     return response
 
-@app.route("/add-coin", methods=["GET", "POST"])
+@main.route("/add-coin", methods=["GET", "POST"])
 def add_coin():
 
     # Get session_token from cookie
@@ -345,7 +345,7 @@ def add_coin():
 
     return render_template("addcoin.html", coins = available_coins, username=user.username)
 
-@app.route("/overview/<symbol>")
+@main.route("/overview/<symbol>")
 def overview(symbol):
     # Get session_token from cookie
     session_token = request.cookies.get("session_token")
@@ -395,7 +395,7 @@ def overview(symbol):
         profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price,
         share=share, realized_gain=realized_gain, t_count=t_count)
 
-@app.route("/delete-transaction/<transaction_id>/<t_count>")
+@main.route("/delete-transaction/<transaction_id>/<t_count>")
 def delete_transaction(transaction_id, t_count):
 
     # Get session_token from cookie
@@ -421,7 +421,7 @@ def delete_transaction(transaction_id, t_count):
     else:
         return redirect(url_for("overview", symbol=symbol))
 
-@app.route("/edit-transaction/<transaction_id>", methods=["GET", "POST"])
+@main.route("/edit-transaction/<transaction_id>", methods=["GET", "POST"])
 def edit_transaction(transaction_id):
 
     # Get session_token from cookie
@@ -446,4 +446,5 @@ def edit_transaction(transaction_id):
     return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)
