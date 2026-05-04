@@ -58,10 +58,15 @@ class Coin(db.Model):
     def formatted_volume(self):
         return self.format_value(self.volume)
 
-def create_app():
+#creating function with optional argument(config)which is None by default if nothing is entered
+def create_app(config=None):
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
     app.config['SECRET_KEY'] = 'Gigaj_Kokana'
+
+    if config:
+        app.config.update(config)
+
     db.init_app(app)
     with app.app_context():
         db.create_all()
