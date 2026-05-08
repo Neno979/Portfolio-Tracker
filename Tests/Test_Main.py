@@ -18,4 +18,31 @@ def client():
 def test_index_not_logged_in(client):
     response = client.get('/')
     assert b"Top 15 coins" in response.data
+    assert b'href="/sign-up"' in response.data
+    assert b'href="/sign-in"' in response.data
+    assert b'href="/sign-out"' not in response.data
 
+def test_sign_up_link_from_index_not_logged_in(client):
+    response = client.get('/')
+    assert b'href="/sign-up"' in response.data
+
+    response = client.get('/sign-up')
+    assert b"Confirm password" in response.data
+
+def test_sign_in_link_from_index_not_logged_in(client):
+    response = client.get('/')
+    assert b'href="/sign-in"' in response.data
+
+    response = client.get('/sign-in')
+    assert b"Password" in response.data
+    assert b"Confirm password" not in response.data
+
+def test_sign_up_hide_header_links(client):
+    response = client.get('/sign-up')
+    assert b'href="/sign-up"' not in response.data
+    assert b'href="/sign-in"' not in response.data
+
+def test_sign_in_hide_header_links(client):
+    response = client.get('/sign-in')
+    assert b'href="/sign-up"' not in response.data
+    assert b'href="/sign-in"' not in response.data
