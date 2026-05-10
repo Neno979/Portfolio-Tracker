@@ -204,6 +204,11 @@ def sign_in():
             flash("  Email or password is invalid!", "danger")
             return render_template("signin.html")
 
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        user = Ptracker.query.filter_by(session_token=session_token).first()
+        if user:
+            return redirect("/portfolio")
     return render_template("signin.html")
 
 @main.route("/sign-up" , methods=["GET", "POST"])
@@ -240,6 +245,12 @@ def sign_up():
             db.session.commit()
             flash("Account created successfully! You can sign in.", "success")
             return redirect("/sign-in")
+
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        user = Ptracker.query.filter_by(session_token=session_token).first()
+        if user:
+            return redirect("/portfolio")
     return render_template("signup.html")
 
 @main.route("/sign-out")
