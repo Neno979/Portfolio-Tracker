@@ -54,3 +54,22 @@ def test_sign_up_password_mismatch(client):
     #assert b"Passwords don&#39;t match!" in response.data
     assert b"Passwords don" in response.data
     assert b"t match!" in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(username='testuser').first()
+    assert user is None
+
+def test_sign_up_successful(client):
+    response = client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "testpass"},
+                                            follow_redirects=True)
+
+    assert b"Account created successfully" in response.data
+    assert b"Confirm password" not in response.data
+    assert b"Password" in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(username='testuser').first()
+    assert user is not None
+    assert user.username == 'testuser'
+    assert user.email == 'test@test'
