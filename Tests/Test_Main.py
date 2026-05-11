@@ -46,3 +46,11 @@ def test_sign_in_hide_header_links(client):
     response = client.get('/sign-in')
     assert b'href="/sign-up"' not in response.data
     assert b'href="/sign-in"' not in response.data
+
+def test_sign_up_password_mismatch(client):
+    response = client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "test"},
+                                            follow_redirects=True)
+    #assert b"Passwords don&#39;t match!" in response.data
+    assert b"Passwords don" in response.data
+    assert b"t match!" in response.data
