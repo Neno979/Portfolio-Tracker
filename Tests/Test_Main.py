@@ -73,3 +73,36 @@ def test_sign_up_successful(client):
     assert user is not None
     assert user.username == 'testuser'
     assert user.email == 'test@test'
+
+def test_sign_up_duplicate_username(client):
+    client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "testpass"},
+                                            follow_redirects=True)
+    response = client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@test2",
+                                             "input_password": "testpass2", "confirm_password": "testpass2"},
+                           follow_redirects=True)
+    assert b"Username already taken!" in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(email="test@test2").first()
+    assert user is None
+
+def test_sign_up_missing_username(client):
+    response = client.post('/sign-up', data={"input_email": "test@test","input_password": "testpass",
+                                             "confirm_password": "testpass"},follow_redirects=True)
+    assert b"All fields are required!" in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(email="test@test").first()
+    assert user is None
+
+def test_sign_up_wrong_email_format(client):
+    response = client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@",
+                                             "input_password": "testpass", "confirm_password": "testpass"},
+                           follow_redirects=True)
+    assert b"Please include" in response.data
+    assert b"in the email address." in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(username="testuser").first()
+    assert user is None
