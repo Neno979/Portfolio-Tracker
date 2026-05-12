@@ -96,13 +96,14 @@ def test_sign_up_missing_username(client):
     user = Ptracker.query.filter_by(email="test@test").first()
     assert user is None
 
-def test_sign_up_wrong_email_format(client):
-    response = client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@",
-                                             "input_password": "testpass", "confirm_password": "testpass"},
-                           follow_redirects=True)
-    assert b"Please include" in response.data
-    assert b"in the email address." in response.data
+def test_sign_in_wrong_credentials(client):
+    client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "testpass"},
+                                            follow_redirects=True)
+    response = client.post('/sign-in', data={"input_email": "test@test","input_password": "testpass2"},follow_redirects=True)
+    assert b"Email or password is invalid!" in response.data
+    assert b"Password" in response.data
 
     from Main import Ptracker
-    user = Ptracker.query.filter_by(username="testuser").first()
-    assert user is None
+    user = Ptracker.query.filter_by(email="test@test").first()
+    assert user.session_token is None
