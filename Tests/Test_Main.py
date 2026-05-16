@@ -107,3 +107,16 @@ def test_sign_in_wrong_credentials(client):
     from Main import Ptracker
     user = Ptracker.query.filter_by(email="test@test").first()
     assert user.session_token is None
+
+def test_sign_in_successful(client):
+    client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "testpass"},
+                                            follow_redirects=True)
+    response = client.post('/sign-in', data={"input_email": "test@test","input_password": "testpass"},follow_redirects=True)
+    assert b"login successful!" in response.data
+    assert b'href="/sign-out"'  in response.data
+    assert b'href="/add-coin"' in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(email="test@test").first()
+    assert user.session_token is not None
