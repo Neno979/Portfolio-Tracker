@@ -120,3 +120,16 @@ def test_sign_in_successful(client):
     from Main import Ptracker
     user = Ptracker.query.filter_by(email="test@test").first()
     assert user.session_token is not None
+
+def test_sign_out_successful(client):
+    client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
+                                            "input_password": "testpass", "confirm_password": "testpass"},
+                                            follow_redirects=True)
+    client.post('/sign-in', data={"input_email": "test@test","input_password": "testpass"},follow_redirects=True)
+    response = client.get('/sign-out', follow_redirects=True)
+    assert b"Sign out successful!" in response.data
+    assert b'href="/sign-in"'  in response.data
+
+    from Main import Ptracker
+    user = Ptracker.query.filter_by(email="test@test").first()
+    assert user.session_token is None
