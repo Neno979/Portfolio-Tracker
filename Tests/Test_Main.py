@@ -133,3 +133,11 @@ def test_sign_out_successful(client):
     from Main import Ptracker
     user = Ptracker.query.filter_by(email="test@test").first()
     assert user.session_token is None
+
+def test_add_coin_not_in_db(client):
+    client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@test",
+                                  "input_password": "testpass", "confirm_password": "testpass"},
+                follow_redirects=True)
+    client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
+    response = client.post("/add-coin", data={"coin_symbol": "ADR","quantity": 1,"total_paid": 1}, follow_redirects=True)
+    assert b"not found in our database!" in response.data
