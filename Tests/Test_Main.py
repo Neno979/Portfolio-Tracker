@@ -1,6 +1,6 @@
 import pytest
 
-from Main import db, create_app
+from Main import db, create_app, Portfolio
 
 
 @pytest.fixture
@@ -141,3 +141,22 @@ def test_add_coin_not_in_db(client):
     client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
     response = client.post("/add-coin", data={"coin_symbol": "ADR","quantity": 1,"total_paid": 1}, follow_redirects=True)
     assert b"not found in our database!" in response.data
+
+def test_add_coin_successful(client):
+    client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@test",
+                                  "input_password": "testpass", "confirm_password": "testpass"},
+                follow_redirects=True)
+    client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
+
+    from Main import Coin
+    with client.application.app_context():
+        test_coin = Coin(id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume ="5", change ="2")
+        db.session.add(test_coin)
+        db.session.commit()
+    response = client.post("/add-coin", data={"coin_symbol": "ADA","quantity": 1,"total_paid": 1}, follow_redirects=True)
+    assert b"Successfully added" in response.data
+
+    from Main import Portfolio
+    with client.application.app_context():
+        portfolio_entry = Portfolio.query.filter_by(co_symbol="ADA").first()
+        assert portfolio_entry is not None
