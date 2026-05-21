@@ -1,10 +1,11 @@
 import pytest
 
-from Main import db, create_app, Portfolio
+from Main import db, create_app, Coin, Portfolio
 
 
 @pytest.fixture
 def client():
+
                         #passing dictionary as an argument
     app = create_app({"SQLALCHEMY_DATABASE_URI" : "sqlite:///:memory:", "TESTING" : True})
 
@@ -21,6 +22,28 @@ def client_logged(client):
                 follow_redirects=True)
     client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
     return client
+
+def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume ="5", change ="2"):
+    with client.application.app_context():
+        testcoin = Coin(
+            id = id,
+            rank = rank,
+            name = name,
+            symbol = symbol,
+            price = price,
+            mcap = mcap,
+            volume = volume,
+            change = change
+        )
+        db.session.add(testcoin)
+        db.session.commit()
+
+def add_coin_to_portfolio(client):
+    return client.post("/add-coin",
+                       data={"coin_symbol": "ADA","quantity": 1,"total_paid": 1},
+                       follow_redirects=True)
+
+
 
 
 def test_index_not_logged_in(client):
@@ -143,13 +166,8 @@ def test_add_coin_not_in_db(client_logged):
     assert b"not found in our database!" in response.data
 
 def test_add_coin_successful(client_logged):
-
-    from Main import Coin
-    with client_logged.application.app_context():
-        test_coin = Coin(id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume ="5", change ="2")
-        db.session.add(test_coin)
-        db.session.commit()
-    response = client_logged.post("/add-coin", data={"coin_symbol": "ADA","quantity": 1,"total_paid": 1}, follow_redirects=True)
+    add_coin_to_db(client_logged)
+    response = add_coin_to_portfolio(client_logged)
     assert b"Successfully added" in response.data
 
     from Main import Portfolio
