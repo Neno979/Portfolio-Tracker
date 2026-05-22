@@ -432,10 +432,11 @@ def delete_transaction(transaction_id, t_count):
     db.session.delete(delete_item)
     db.session.commit()
 
+    flash(f"transaction deleted!", "success")
     if t_count == "1":
         return redirect("/portfolio")
     else:
-        return redirect(url_for("overview", symbol=symbol))
+        return redirect(url_for("main.overview", symbol=symbol))
 
 @main.route("/edit-transaction/<transaction_id>", methods=["GET", "POST"])
 def edit_transaction(transaction_id):
@@ -457,7 +458,7 @@ def edit_transaction(transaction_id):
         edit_item.total_paid = request.form["total_paid"]
         db.session.commit()
         flash(f"transaction successfully changed!", "success")
-        return redirect(url_for("overview", symbol=edit_item.co_symbol))
+        return redirect(url_for("main.overview", symbol=edit_item.co_symbol))
 
     return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 

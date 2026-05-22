@@ -174,3 +174,12 @@ def test_add_coin_successful(client_logged):
     with client_logged.application.app_context():
         portfolio_entry = Portfolio.query.filter_by(co_symbol="ADA").first()
         assert portfolio_entry is not None
+
+def test_delete_last_transaction(client_logged):
+    add_coin_to_db(client_logged)
+    add_coin_to_portfolio(client_logged)
+    response = client_logged.get("overview/ADA", follow_redirects=True)
+    assert b"ADA - overview" in response.data
+    response = client_logged.get("/delete-transaction/1/1", follow_redirects=True)
+    assert b"transaction deleted" in response.data
+    assert b'href="/add-coin"' in response.data
