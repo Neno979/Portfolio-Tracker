@@ -194,5 +194,5 @@ def test_delete_1_out_of_more_transaction(client_logged):
     for _ in range(2):
         add_coin_to_portfolio(client_logged)
     client_logged.get("overview/ADA", follow_redirects=True)
-    response = client_logged.get("/delete-transaction/1/1", follow_redirects=True)
+    response = client_logged.get("/delete-transaction/1/2", follow_redirects=True)
     assert b"transaction deleted" in response.data
