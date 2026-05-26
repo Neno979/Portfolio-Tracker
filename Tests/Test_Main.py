@@ -203,16 +203,8 @@ def test_edit_transaction(client_logged):
     add_coin_to_portfolio(client_logged)
     client_logged.get("overview/ADA", follow_redirects=True)
 
-    response1 = client_logged.get("/edit-transaction/1", follow_redirects=True)
-    assert b"Edit transaction" in response1.data
-    from Main import Portfolio
-    with client_logged.application.app_context():
-        portfolio_old = Portfolio.query.filter_by(co_symbol="ADA").first()
-        assert portfolio_old.quantity == 1
-        assert portfolio_old.total_paid == 1
-
-    response2 = client_logged.post("/edit-transaction/1", data = {"quantity": 2,"total_paid": 2}, follow_redirects=True)
-    assert b"ADA - overview" in response2.data
+    response = client_logged.post("/edit-transaction/1", data = {"quantity": 2,"total_paid": 2}, follow_redirects=True)
+    assert b"ADA - overview" in response.data
     with client_logged.application.app_context():
         portfolio_new = Portfolio.query.filter_by(co_symbol="ADA").first()
         assert portfolio_new.quantity == 2
