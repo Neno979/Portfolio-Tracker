@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy.sql.functions import user
 
 from Main import db, create_app, Coin, Portfolio
 
@@ -23,7 +24,7 @@ def client_logged(client):
     client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
     return client
 
-def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume ="5", change ="2"):
+def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume =5, change =2):
     with client.application.app_context():
         testcoin = Coin(
             id = id,
@@ -38,9 +39,17 @@ def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mca
         db.session.add(testcoin)
         db.session.commit()
 
-def add_coin_to_portfolio(client):
+def add_coins_to_db(client):
+    with client.application.app_context():
+        for i in range(50):
+            dummycoin = add_coin_to_db(client, id=i, rank=i, name = f"coin{i}", symbol=f"COIN{i}")
+        return dummycoin
+
+
+
+def add_coin_to_portfolio(client, coin_symbol="ADA"):
     return client.post("/add-coin",
-                       data={"coin_symbol": "ADA","quantity": 1,"total_paid": 1},
+                       data={"coin_symbol":coin_symbol,"quantity": 1,"total_paid": 1},
                        follow_redirects=True)
 
 
@@ -165,10 +174,15 @@ def test_add_coin_not_in_db(client_logged):
     response = client_logged.post("/add-coin", data={"coin_symbol": "ADR","quantity": 1,"total_paid": 1}, follow_redirects=True)
     assert b"not found in our database!" in response.data
 
+def test_add_coin_wrong_quantity(client_logged):
+    response = client_logged.post("/add-coin", data={"coin_symbol": "ADA","quantity": 0,"total_paid": 1}, follow_redirects=True)
+    assert b"Quantity must be greater than zero!" in response.data
+
 def test_add_coin_successful(client_logged):
     add_coin_to_db(client_logged)
     response = add_coin_to_portfolio(client_logged)
     assert b"Successfully added" in response.data
+    assert b"ADA" in response.data
 
     from Main import Portfolio
     with client_logged.application.app_context():
@@ -209,3 +223,20 @@ def test_edit_transaction(client_logged):
         portfolio_new = Portfolio.query.filter_by(co_symbol="ADA").first()
         assert portfolio_new.quantity == 2
         assert portfolio_new.total_paid == 2
+
+def test_add_coins_max_limit_reached(client_logged):
+    add_coins_to_db(client_logged)
+
+    from Main import Coin
+    with client_logged.application.app_context():
+        coin_count = Coin.query.count()
+        assert coin_count == 50
+
+    for i in range(50):
+        response = add_coin_to_portfolio(client_logged, coin_symbol=f"COIN{i}")
+        assert b"Successfully added" in response.data
+
+    response = add_coin_to_portfolio(client_logged)
+    assert b"maximum coins reached!" in response.data
+    assert b'COIN49"' in response.data
+    assert b"ADA" not in response.data

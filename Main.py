@@ -290,8 +290,8 @@ def add_coin():
     unique_coins=Portfolio.query.filter_by(user_id=user.id).group_by(Portfolio.co_symbol).order_by(Portfolio.id).all()
     coin_number = len(unique_coins)
     print(coin_number)
-    for coin in unique_coins:
-        print(coin.co_symbol)
+    #for coin in unique_coins:
+        #print(coin.co_symbol)
     if coin_number == 50:
         flash("maximum coins reached!", "warning")
         return redirect("/portfolio")
