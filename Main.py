@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, flash, make_respons
 from flask_sqlalchemy import SQLAlchemy
 import requests
 import uuid
+import hashlib
 
 main = Blueprint('main', __name__)
 db = SQLAlchemy()
@@ -184,8 +185,10 @@ def sign_in():
         # find user by email
         user = Ptracker.query.filter_by(email=email).first()
 
+        hashed_input = hashlib.sha256(password.encode()).hexdigest()
+
         # check if mail exist and pass is correct
-        if user and user.password == password:
+        if user and user.password == hashed_input:
 
             # create session token and store it in DB
             session_token = str(uuid.uuid4())
@@ -240,7 +243,8 @@ def sign_up():
             flash("  Email already registered!", "danger")
             return render_template("signup.html")
         else:
-            ptracker = Ptracker(username=username, email=email, password=password)
+            hashed_pass = hashlib.sha256(password.encode()).hexdigest()
+            ptracker = Ptracker(username=username, email=email, password=hashed_pass)
             db.session.add(ptracker)
             db.session.commit()
             flash("Account created successfully! You can sign in.", "success")

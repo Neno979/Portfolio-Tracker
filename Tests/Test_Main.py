@@ -1,12 +1,10 @@
 import pytest
-from sqlalchemy.sql.functions import user
 
 from Main import db, create_app, Coin, Portfolio
 
 
 @pytest.fixture
 def client():
-
                         #passing dictionary as an argument
     app = create_app({"SQLALCHEMY_DATABASE_URI" : "sqlite:///:memory:", "TESTING" : True})
 
@@ -16,6 +14,7 @@ def client():
         db.create_all()
         yield app.test_client()
 
+
 @pytest.fixture
 def client_logged(client):
     client.post('/sign-up', data={"input_username": "testuser", "input_email": "test@test",
@@ -24,10 +23,10 @@ def client_logged(client):
     client.post('/sign-in', data={"input_email": "test@test", "input_password": "testpass"}, follow_redirects=True)
     return client
 
-def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume =5, change =2):
+
+def add_coin_to_db(client, rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume =5, change =2):
     with client.application.app_context():
         testcoin = Coin(
-            id = id,
             rank = rank,
             name = name,
             symbol = symbol,
@@ -39,20 +38,17 @@ def add_coin_to_db(client, id = 1,rank =1, name= "ADA", symbol="ADA",price=1,mca
         db.session.add(testcoin)
         db.session.commit()
 
+
 def add_coins_to_db(client):
     with client.application.app_context():
         for i in range(50):
-            dummycoin = add_coin_to_db(client, id=i, rank=i, name = f"coin{i}", symbol=f"COIN{i}")
-        return dummycoin
-
+            add_coin_to_db(client, rank=i, name = f"coin{i}", symbol=f"COIN{i}")
 
 
 def add_coin_to_portfolio(client, coin_symbol="ADA"):
     return client.post("/add-coin",
                        data={"coin_symbol":coin_symbol,"quantity": 1,"total_paid": 1},
                        follow_redirects=True)
-
-
 
 
 def test_index_not_logged_in(client):
@@ -91,7 +87,6 @@ def test_sign_up_password_mismatch(client):
     response = client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
                                             "input_password": "testpass", "confirm_password": "test"},
                                             follow_redirects=True)
-    #assert b"Passwords don&#39;t match!" in response.data
     assert b"Passwords don" in response.data
     assert b"t match!" in response.data
 
@@ -103,7 +98,6 @@ def test_sign_up_successful(client):
     response = client.post('/sign-up',data={"input_username": "testuser", "input_email": "test@test",
                                             "input_password": "testpass", "confirm_password": "testpass"},
                                             follow_redirects=True)
-
     assert b"Account created successfully" in response.data
     assert b"Confirm password" not in response.data
     assert b"Password" in response.data
@@ -235,8 +229,8 @@ def test_add_coins_max_limit_reached(client_logged):
     for i in range(50):
         response = add_coin_to_portfolio(client_logged, coin_symbol=f"COIN{i}")
         assert b"Successfully added" in response.data
+    assert b'COIN49"' in response.data
 
     response = add_coin_to_portfolio(client_logged)
     assert b"maximum coins reached!" in response.data
-    assert b'COIN49"' in response.data
     assert b"ADA" not in response.data
