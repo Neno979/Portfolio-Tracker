@@ -419,6 +419,6 @@ def edit_transaction(transaction_id):
 
     return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 
+app = create_app()
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True)
