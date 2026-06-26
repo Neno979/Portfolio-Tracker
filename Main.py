@@ -1,19 +1,22 @@
-from enum import unique
-
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, flash, make_response, url_for, Blueprint
 from models import Coin, Portfolio, Ptracker, db
 import requests
 import uuid
 import hashlib
+import os
+
 
 main = Blueprint('main', __name__)
-
+load_dotenv()
 
 #creating function with optional argument(config)which is None by default if nothing is entered
 def create_app(config=None):
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sqlite.db"
-    app.config['SECRET_KEY'] = 'Gigaj_Kokana'
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "secret")
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 
     if config:
         app.config.update(config)
@@ -31,7 +34,7 @@ def index():
 
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
-    api_key = "coinranking6ae704e6e7974096325d95be12cd9c383994de673acb79bf"
+    api_key = os.getenv("COINRANKING_API_KEY")
     url = "https://api.coinranking.com/v2/coins?limit=100"
     headers = {"x-access-token": api_key}
     response = requests.get(url, headers=headers)
