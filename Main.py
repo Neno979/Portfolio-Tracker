@@ -35,7 +35,7 @@ def index():
 
     theads = ["#", "Price", "M.Cap.", "24hVol.", "24h%"]
     api_key = os.getenv("COINRANKING_API_KEY")
-    url = "https://api.coinranking.com/v2/coins?limit=100"
+    url = "https://api.coinranking.com/v2/coins?limit=100&referenceCurrencyUuid=5k-_VTxqtCEI"
     headers = {"x-access-token": api_key}
     response = requests.get(url, headers=headers)
     data = response.json()
@@ -254,7 +254,7 @@ def add_coin():
         return redirect("/portfolio")
 
     # get all coins from DB for dropdown
-    available_coins = Coin.query.order_by(Coin.rank).limit(50).all()
+    available_coins = Coin.query.order_by(Coin.rank).limit(100).all()
 
     if request.method == "POST":
         coin_symbol = request.form.get("coin_symbol")
