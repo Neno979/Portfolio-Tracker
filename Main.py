@@ -37,23 +37,31 @@ def index():
     api_key = os.getenv("COINRANKING_API_KEY")
     url = "https://api.coinranking.com/v2/coins?limit=100&referenceCurrencyUuid=5k-_VTxqtCEI"
     headers = {"x-access-token": api_key}
-    response = requests.get(url, headers=headers)
-    data = response.json()
-    coins_data = data['data']['coins']
-
+    max_pages = 6
+    next_page = ""
     Coin.query.delete()
-    for coin_data in coins_data:
-        new_coin = Coin(
-            rank=int(coin_data['rank']),
-            name=coin_data['name'],
-            symbol=coin_data['symbol'],
-            price=float(coin_data['price']),
-            mcap=float(coin_data['marketCap']),
-            volume=float(coin_data['24hVolume']),
-            change=float(coin_data['change'])
-        )
-        db.session.add(new_coin)
+    for page in range(max_pages):
+        response = requests.get(url+next_page, headers=headers)
+        data = response.json()
+        coins_data = data['data']['coins']
 
+
+        for coin_data in coins_data:
+            new_coin = Coin(
+                uuid=str(coin_data['uuid']),
+                rank=int(coin_data['rank']),
+                name=coin_data['name'],
+                symbol=coin_data['symbol'],
+                price=float(coin_data['price']),
+                mcap=float(coin_data['marketCap']),
+                volume=float(coin_data['24hVolume']),
+                change=float(coin_data['change'])
+            )
+            db.session.add(new_coin)
+        pagination = data['pagination']
+        if not pagination.get('hasNextPage'):
+            break
+        next_page = '&cursor=' + pagination['nextCursor']
     db.session.commit()
 
     coins = Coin.query.order_by(Coin.rank).all()
@@ -254,7 +262,7 @@ def add_coin():
         return redirect("/portfolio")
 
     # get all coins from DB for dropdown
-    available_coins = Coin.query.order_by(Coin.rank).limit(100).all()
+    available_coins = Coin.query.order_by(Coin.rank).limit(200).all()
 
     if request.method == "POST":
         coin_symbol = request.form.get("coin_symbol")
