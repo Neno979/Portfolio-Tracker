@@ -427,6 +427,73 @@ def edit_transaction(transaction_id):
 
     return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 
+@main.route("/basket" , methods=["GET", "POST"])
+def basket():
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = Ptracker.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    # Get user's all portfolio transactions
+    holdings = Portfolio.query.filter_by(user_id=user.id).all()
+
+
+
+    #initiate dictionary for storing all data
+    coin_data ={}
+    for holding in holdings:
+        symbol = holding.co_symbol
+        #add values for each coin first time in loop as dictionary in dictionary
+        if symbol not in coin_data:
+            coin_data[symbol] = {
+                "total_quantity": 0,
+                "total_paid": 0,
+            }
+        coin_data[symbol]["total_quantity"] += holding.quantity
+        coin_data[symbol]["total_paid"] += holding.total_paid
+
+    #initiate list for storing final data
+    portfolio_data = []
+    total_value = 0
+    total_paid_all = 0
+    target_perc = {
+        "ADA": 15, "ALGO": 8, "ATOM": 8, "AVAX": 15, "GRT": 8,
+        "DOT": 8, "FIL": 7, "LINK": 8, "PYTH": 15, "TRX": 8,
+    }
+    for symbol, data in coin_data.items():
+        current_coin = Coin.query.filter_by(symbol=symbol).first()
+        current_value = 0
+        if current_coin:
+            avg_buy_price = data["total_paid"] / data["total_quantity"]
+            current_value = data["total_quantity"] * current_coin.price
+            profit_loss = current_value - data["total_paid"]
+            total_quantity = data["total_quantity"]
+            portfolio_data.append({
+                "co_symbol": symbol,
+                "avg_buy_price": avg_buy_price,
+                "price": current_coin.price,
+                "profit_loss": profit_loss,
+                "value": current_value,
+                "quantity": total_quantity,
+                "target_perc": target_perc.get(symbol),
+            })
+        total_value += current_value
+        total_paid_all += data["total_paid"]
+    if total_paid_all == 0:
+        profit_loss_all = 0
+        profit_loss_perc = 0
+    else:
+        profit_loss_all = total_value - total_paid_all
+        profit_loss_perc = (profit_loss_all/total_paid_all) * 100
+    theads = ["Coin", "buy price", "current price", "Target %", "current %", "next buy"]
+    return render_template("basket.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
+                           total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc, target_perc=target_perc, )
+
 app = create_app()
 if __name__ == "__main__":
     app.run(debug=True)

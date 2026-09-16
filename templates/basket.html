@@ -8,9 +8,9 @@
 {%endblock hmenu%}
 
 {% block tname%}
-    <a href="/add-coin" class="btn btn-success btn-sm ms-3">+ Add Coin</a>
-    My portfolio
-    <a href="/basket" class="btn btn-success btn-sm ms-3">Basket</a>
+    <a href="/add-coin" class="btn btn-success btn-sm ms-3">Set target</a>
+    Basket
+    <a href="/portfolio" class="btn btn-success btn-sm ms-3">Portfolio</a>
 {% endblock tname%}
 
 {% block medium%}
@@ -65,11 +65,9 @@
                 </td>
                 <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
                 <td>${{ "{:,.2f}".format(item.price) }}</td>
-                <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
-                    ${{ "{:,.2f}".format(item.profit_loss) }}
-                </td>
-                <td>${{ "{:,.2f}".format(item.value) }}</td>
-                <td>{{ "%.3f"|format(item.quantity) }}</td>
+                <td>${{ "{:,.2f}".format(item.target_perc) }}</td>
+                <td>${{ "{:,.2f}".format(item.value/total_v*100) }}</td>
+                <td>{{ "%.1f"|format(item.target_perc/100*(total_v+100)-item.value) }}</td>
             </tr>
         {% endfor %}
     {% endif %}
