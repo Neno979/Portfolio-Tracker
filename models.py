@@ -24,7 +24,7 @@ class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String, unique=True, nullable=False)
     rank = db.Column(db.Integer, unique=True, nullable=False)
-    name = db.Column(db.String, unique=True, nullable=False)
+    name = db.Column(db.String, unique=False, nullable=False)
     symbol = db.Column(db.String, unique=False, nullable=False)
     price = db.Column(db.Float, unique=False, nullable=False)
     mcap = db.Column(db.Float, unique=False, nullable=False)

@@ -19,7 +19,7 @@
         <div class="card text-center" style="background-color: #d2e3f8">
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">Portfolio Value</h6>
-                <h4 class="card-title">${{ "{:,.2f}".format(total_v) }}</h4>
+                <h4 class="card-title">€{{ "{:,.2f}".format(total_v) }}</h4>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">Profit/Loss</h6>
                 <h4 class="card-title {% if total_pl > 0 %}text-success{% else %}text-danger{% endif %}">
-                    ${{ "{:,.2f}".format(total_pl) }}
+                    €{{ "{:,.2f}".format(total_pl) }}
                 </h4>
             </div>
         </div>
@@ -63,12 +63,12 @@
                     <strong>{{ item.co_symbol }}</strong>
                     </a>
                 </td>
-                <td>${{ "{:,.2f}".format(item.avg_buy_price) }}</td>
-                <td>${{ "{:,.2f}".format(item.price) }}</td>
+                <td>€{{ "{:,.2f}".format(item.avg_buy_price) }}</td>
+                <td>€{{ "{:,.2f}".format(item.price) }}</td>
                 <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
-                    ${{ "{:,.2f}".format(item.profit_loss) }}
+                    €{{ "{:,.2f}".format(item.profit_loss) }}
                 </td>
-                <td>${{ "{:,.2f}".format(item.value) }}</td>
+                <td>€{{ "{:,.2f}".format(item.value) }}</td>
                 <td>{{ "%.3f"|format(item.quantity) }}</td>
             </tr>
         {% endfor %}
