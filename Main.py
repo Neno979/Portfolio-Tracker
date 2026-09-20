@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, flash, make_response, url_for, Blueprint
-from models import Coin, Portfolio, Ptracker, db
+from models import Coin, Portfolio, User, db
 import requests
 import uuid
 import hashlib
@@ -42,6 +42,8 @@ def index():
     Coin.query.delete()
     for page in range(max_pages):
         response = requests.get(url+next_page, headers=headers)
+        print(response.headers.get("X-RateLimit-Limit-Second"))
+        print(response.headers.get("X-RateLimit-Remaining-Second"))
         data = response.json()
         coins_data = data['data']['coins']
 
@@ -69,7 +71,7 @@ def index():
     session_token = request.cookies.get("session_token")
 
     if session_token:
-        user = Ptracker.query.filter_by(session_token=session_token).first()
+        user = User.query.filter_by(session_token=session_token).first()
         if user:
             return redirect("/portfolio")
     return render_template("index.html", theads = theads, coins = coins)
@@ -81,15 +83,13 @@ def portfolio():
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
 
     # Get user's all portfolio transactions
     holdings = Portfolio.query.filter_by(user_id=user.id).all()
-
-
 
     #initiate dictionary for storing all data
     coin_data ={}
@@ -144,7 +144,7 @@ def sign_in():
         password = request.form.get("input_password")
 
         # find user by email
-        user = Ptracker.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
         hashed_input = hashlib.sha256(password.encode()).hexdigest()
 
@@ -170,7 +170,7 @@ def sign_in():
 
     session_token = request.cookies.get("session_token")
     if session_token:
-        user = Ptracker.query.filter_by(session_token=session_token).first()
+        user = User.query.filter_by(session_token=session_token).first()
         if user:
             return redirect("/portfolio")
     return render_template("signin.html")
@@ -195,17 +195,17 @@ def sign_up():
             return render_template("signup.html")
 
         # 3. Check if username already exists
-        elif Ptracker.query.filter_by(username=username).first():
+        elif User.query.filter_by(username=username).first():
             flash("  Username already taken!", "danger")
             return render_template("signup.html")
 
         # 4. Check if email already exists
-        elif Ptracker.query.filter_by(email=email).first():
+        elif User.query.filter_by(email=email).first():
             flash("  Email already registered!", "danger")
             return render_template("signup.html")
         else:
             hashed_pass = hashlib.sha256(password.encode()).hexdigest()
-            ptracker = Ptracker(username=username, email=email, password=hashed_pass)
+            ptracker = User(username=username, email=email, password=hashed_pass)
             db.session.add(ptracker)
             db.session.commit()
             flash("Account created successfully! You can sign in.", "success")
@@ -213,7 +213,7 @@ def sign_up():
 
     session_token = request.cookies.get("session_token")
     if session_token:
-        user = Ptracker.query.filter_by(session_token=session_token).first()
+        user = User.query.filter_by(session_token=session_token).first()
         if user:
             return redirect("/portfolio")
     return render_template("signup.html")
@@ -225,7 +225,7 @@ def sign_out():
     session_token = request.cookies.get("session_token")
 
     # remove session_token from DB
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if user:
         user.session_token = None
         db.session.commit()
@@ -246,7 +246,7 @@ def add_coin():
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
@@ -333,7 +333,7 @@ def overview(symbol):
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
@@ -384,7 +384,7 @@ def delete_transaction(transaction_id, t_count):
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
@@ -411,7 +411,7 @@ def edit_transaction(transaction_id):
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
@@ -434,7 +434,7 @@ def basket():
     if not session_token:
         flash("Please login first!", "warning")
         return redirect("/sign-in")
-    user = Ptracker.query.filter_by(session_token=session_token).first()
+    user = User.query.filter_by(session_token=session_token).first()
     if not user:
         flash("Please login first!", "warning")
         return redirect("/sign-in")

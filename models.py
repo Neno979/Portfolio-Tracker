@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class Ptracker(db.Model):
+class User(db.Model):
+    __tablename__ = 'ptracker'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
@@ -18,7 +19,7 @@ class Portfolio(db.Model):
     co_name = db.Column(db.String, unique=False, nullable=False)
     quantity = db.Column(db.Float, unique=False, nullable=False)
     total_paid = db.Column(db.Float, unique=False, nullable=False)
-    user = db.relationship('Ptracker', backref=db.backref('portfolio', lazy=True))
+    user = db.relationship('User', backref=db.backref('portfolio', lazy=True))
 
 class Coin(db.Model):
     id = db.Column(db.Integer, primary_key=True)

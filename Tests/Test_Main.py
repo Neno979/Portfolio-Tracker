@@ -1,3 +1,5 @@
+
+
 import pytest
 
 from Main import db, create_app, Coin, Portfolio
@@ -24,9 +26,10 @@ def client_logged(client):
     return client
 
 
-def add_coin_to_db(client, rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume =5, change =2):
+def add_coin_to_db(client, uuid ="testUuid", rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,volume =5, change =2):
     with client.application.app_context():
         testcoin = Coin(
+            uuid = uuid,
             rank = rank,
             name = name,
             symbol = symbol,
@@ -42,7 +45,7 @@ def add_coin_to_db(client, rank =1, name= "ADA", symbol="ADA",price=1,mcap=10,vo
 def add_coins_to_db(client):
     with client.application.app_context():
         for i in range(50):
-            add_coin_to_db(client, rank=i, name = f"coin{i}", symbol=f"COIN{i}")
+            add_coin_to_db(client, uuid=f"uuid{i}", rank=i, name=f"coin{i}", symbol=f"COIN{i}")
 
 
 def add_coin_to_portfolio(client, coin_symbol="ADA"):
@@ -90,8 +93,8 @@ def test_sign_up_password_mismatch(client):
     assert b"Passwords don" in response.data
     assert b"t match!" in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(username='testuser').first()
+    from Main import User
+    user = User.query.filter_by(username='testuser').first()
     assert user is None
 
 def test_sign_up_successful(client):
@@ -102,8 +105,8 @@ def test_sign_up_successful(client):
     assert b"Confirm password" not in response.data
     assert b"Password" in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(username='testuser').first()
+    from Main import User
+    user = User.query.filter_by(username='testuser').first()
     assert user is not None
     assert user.username == 'testuser'
     assert user.email == 'test@test'
@@ -117,8 +120,8 @@ def test_sign_up_duplicate_username(client):
                            follow_redirects=True)
     assert b"Username already taken!" in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(email="test@test2").first()
+    from Main import User
+    user = User.query.filter_by(email="test@test2").first()
     assert user is None
 
 def test_sign_up_missing_username(client):
@@ -126,8 +129,8 @@ def test_sign_up_missing_username(client):
                                              "confirm_password": "testpass"},follow_redirects=True)
     assert b"All fields are required!" in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(email="test@test").first()
+    from Main import User
+    user = User.query.filter_by(email="test@test").first()
     assert user is None
 
 def test_sign_in_wrong_credentials(client):
@@ -138,8 +141,8 @@ def test_sign_in_wrong_credentials(client):
     assert b"Email or password is invalid!" in response.data
     assert b"Password" in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(email="test@test").first()
+    from Main import User
+    user = User.query.filter_by(email="test@test").first()
     assert user.session_token is None
 
 def test_sign_in_successful(client):
@@ -151,8 +154,8 @@ def test_sign_in_successful(client):
     assert b'href="/sign-out"'  in response.data
     assert b'href="/add-coin"' in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(email="test@test").first()
+    from Main import User
+    user = User.query.filter_by(email="test@test").first()
     assert user.session_token is not None
 
 def test_sign_out_successful(client_logged):
@@ -160,8 +163,8 @@ def test_sign_out_successful(client_logged):
     assert b"Sign out successful!" in response.data
     assert b'href="/sign-in"'  in response.data
 
-    from Main import Ptracker
-    user = Ptracker.query.filter_by(email="test@test").first()
+    from Main import User
+    user = User.query.filter_by(email="test@test").first()
     assert user.session_token is None
 
 def test_add_coin_not_in_db(client_logged):
