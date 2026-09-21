@@ -59,8 +59,8 @@
         {% for item in portfolio %}
             <tr>
                 <td>
-                    <a href="/overview/{{ item.co_symbol }}" style="text-decoration: none; color: inherit;">
-                    <strong>{{ item.co_symbol }}</strong>
+                    <a href="/overview/{{ item.symbol }}" style="text-decoration: none; color: inherit;">
+                    <strong>{{ item.symbol }}</strong>
                     </a>
                 </td>
                 <td>€{{ "{:,.2f}".format(item.avg_buy_price) }}</td>

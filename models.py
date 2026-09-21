@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class User(db.Model):
-    __tablename__ = 'ptracker'
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
@@ -13,15 +13,17 @@ class User(db.Model):
     is_deleted = db.Column(db.Boolean, unique=False, default=False)
 
 class Portfolio(db.Model):
+    __tablename__ = 'portfolios'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('ptracker.id'), nullable=False)
-    co_symbol = db.Column(db.String, unique=False, nullable=False)
-    co_name = db.Column(db.String, unique=False, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    coin_uuid = db.Column(db.Integer, db.ForeignKey('coins.uuid'), nullable=False)
     quantity = db.Column(db.Float, unique=False, nullable=False)
     total_paid = db.Column(db.Float, unique=False, nullable=False)
     user = db.relationship('User', backref=db.backref('portfolio', lazy=True))
+    coin = db.relationship('Coin',backref=db.backref('portfolio', lazy=True))
 
 class Coin(db.Model):
+    __tablename__ = 'coins'
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String, unique=True, nullable=False)
     rank = db.Column(db.Integer, unique=True, nullable=False)

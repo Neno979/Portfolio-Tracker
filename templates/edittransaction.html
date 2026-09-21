@@ -26,7 +26,7 @@
                 <form method="post">
                     <div class="form-group mb-3">
                         <label class="text">Coin symbol</label>
-                            <input name=type="text" class="form-control" value="{{ edit_item.co_symbol}}" disabled>
+                            <input name=type="text" class="form-control" value="{{ edit_item.coin.symbol}}" disabled>
                                 <small class="text-primary">It is not possible to edit</small>
                     </div>
                     <div class="form-group ">
@@ -41,7 +41,7 @@
                     </div>
                     <div class="form-group">
                         <button class="btn btn-outline-primary " name="action" type="submit" value="Submit">Submit</button>
-                        <a href="/overview/{{ edit_item.co_symbol }}" class="btn btn-outline-danger">Cancel</a>
+                        <a href="/overview/{{ edit_item.coin.symbol }}" class="btn btn-outline-danger">Cancel</a>
                     </div>
                 </form>
             </div>

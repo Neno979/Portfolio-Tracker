@@ -168,7 +168,7 @@ def test_sign_out_successful(client_logged):
     assert user.session_token is None
 
 def test_add_coin_not_in_db(client_logged):
-    response = client_logged.post("/add-coin", data={"coin_symbol": "ADR","quantity": 1,"total_paid": 1}, follow_redirects=True)
+    response = client_logged.post("/add-coin", data={"coin_symbol": "ADA","quantity": 1,"total_paid": 1}, follow_redirects=True)
     assert b"not found in our database!" in response.data
 
 def test_add_coin_wrong_quantity(client_logged):
@@ -217,7 +217,7 @@ def test_edit_transaction(client_logged):
     response = client_logged.post("/edit-transaction/1", data = {"quantity": 2,"total_paid": 2}, follow_redirects=True)
     assert b"ADA - overview" in response.data
     with client_logged.application.app_context():
-        portfolio_new = Portfolio.query.filter_by(co_symbol="ADA").first()
+        portfolio_new = Portfolio.query.join(Coin).filter(Coin.symbol=="ADA").first()
         assert portfolio_new.quantity == 2
         assert portfolio_new.total_paid == 2
 

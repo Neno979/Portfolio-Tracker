@@ -37,7 +37,7 @@ def index():
     api_key = os.getenv("COINRANKING_API_KEY")
     url = "https://api.coinranking.com/v2/coins?limit=100&referenceCurrencyUuid=5k-_VTxqtCEI"
     headers = {"x-access-token": api_key}
-    max_pages = 6
+    max_pages = 2
     next_page = ""
     Coin.query.delete()
     for page in range(max_pages):
@@ -94,7 +94,7 @@ def portfolio():
     #initiate dictionary for storing all data
     coin_data ={}
     for holding in holdings:
-        symbol = holding.co_symbol
+        symbol = holding.coin.symbol
         #add values for each coin first time in loop as dictionary in dictionary
         if symbol not in coin_data:
             coin_data[symbol] = {
@@ -117,7 +117,7 @@ def portfolio():
             profit_loss = current_value - data["total_paid"]
             total_quantity = data["total_quantity"]
             portfolio_data.append({
-                "co_symbol": symbol,
+                "symbol": symbol,
                 "avg_buy_price": avg_buy_price,
                 "price": current_coin.price,
                 "profit_loss": profit_loss,
@@ -205,8 +205,8 @@ def sign_up():
             return render_template("signup.html")
         else:
             hashed_pass = hashlib.sha256(password.encode()).hexdigest()
-            ptracker = User(username=username, email=email, password=hashed_pass)
-            db.session.add(ptracker)
+            users = User(username=username, email=email, password=hashed_pass)
+            db.session.add(users)
             db.session.commit()
             flash("Account created successfully! You can sign in.", "success")
             return redirect("/sign-in")
@@ -252,11 +252,11 @@ def add_coin():
         return redirect("/sign-in")
 
     # get all unique coins from user portfolio table
-    unique_coins=Portfolio.query.filter_by(user_id=user.id).group_by(Portfolio.co_symbol).order_by(Portfolio.id).all()
+    unique_coins=Portfolio.query.filter_by(user_id=user.id).join(Coin).group_by(Coin.symbol).order_by(Portfolio.id).all()
     coin_number = len(unique_coins)
     print(coin_number)
     #for coin in unique_coins:
-        #print(coin.co_symbol)
+
     if coin_number == 50:
         flash("maximum coins reached!", "warning")
         return redirect("/portfolio")
@@ -303,8 +303,7 @@ def add_coin():
         # Add to portfolio and save to DB
         new_holding = Portfolio(
             user_id=user.id,
-            co_symbol=coin_symbol,
-            co_name=coin.name,
+            coin_uuid=coin.uuid,
             quantity=quantity,
             total_paid=total_paid
         )
@@ -345,15 +344,19 @@ def overview(symbol):
     print(all_transactions)
 
     # Get all transactions for this coin
+    coin = Coin.query.filter_by(symbol=symbol.upper()).first()
+    if not coin:
+        # handle gracefully — redirect, 404, flash message, etc.
+        return redirect("/portfolio")
+
     transactions = (Portfolio.query.filter_by
-        (user_id=user.id, co_symbol=symbol.upper()).order_by
-            (Portfolio.id.desc()).all())
+                    (user_id=user.id, coin_uuid=coin.uuid).order_by
+                    (Portfolio.id.desc()).all())
     t_count = len(transactions)
     print(t_count)
     total_value = 0
     for tr in all_transactions:
-        tr_coin = Coin.query.filter_by(symbol=tr.co_symbol).first()
-        value = tr.quantity * tr_coin.price
+        value = tr.quantity * tr.coin.price
         total_value += value
         print(total_value)
     # Get current price from DB
@@ -371,7 +374,7 @@ def overview(symbol):
 
     theads = ["quantity", "paid", "buy/sell", "action" ]
     return render_template("overview.html", theads=theads, username=user.username,
-        session_token=session_token, transactions=transactions, co_symbol=symbol.upper(),
+        session_token=session_token, transactions=transactions, symbol=coin.symbol.upper(),
         total_quantity=total_quantity,total_paid=total_paid, avg_price=avg_price, current_value=current_value,
         profit_loss = profit_loss, profit_loss_pct = profit_loss_pct, current_price=current_coin.price,
         share=share, realized_gain=realized_gain, t_count=t_count)
@@ -391,9 +394,9 @@ def delete_transaction(transaction_id, t_count):
 
     delete_item = Portfolio.query.filter_by(id=transaction_id).first()
     print(delete_item)
-    print(delete_item.co_symbol)
+    print(delete_item.coin.symbol)
     print(t_count)
-    symbol = delete_item.co_symbol
+    symbol = delete_item.coin.symbol
     db.session.delete(delete_item)
     db.session.commit()
 
@@ -423,7 +426,7 @@ def edit_transaction(transaction_id):
         edit_item.total_paid = request.form["total_paid"]
         db.session.commit()
         flash(f"transaction successfully changed!", "success")
-        return redirect(url_for("main.overview", symbol=edit_item.co_symbol))
+        return redirect(url_for("main.overview", symbol=edit_item.coin.symbol))
 
     return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
 
@@ -447,7 +450,7 @@ def basket():
     #initiate dictionary for storing all data
     coin_data ={}
     for holding in holdings:
-        symbol = holding.co_symbol
+        symbol = holding.coin.symbol
         #add values for each coin first time in loop as dictionary in dictionary
         if symbol not in coin_data:
             coin_data[symbol] = {
@@ -474,7 +477,7 @@ def basket():
             profit_loss = current_value - data["total_paid"]
             total_quantity = data["total_quantity"]
             portfolio_data.append({
-                "co_symbol": symbol,
+                "symbol": symbol,
                 "avg_buy_price": avg_buy_price,
                 "price": current_coin.price,
                 "profit_loss": profit_loss,
