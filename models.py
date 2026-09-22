@@ -16,9 +16,10 @@ class Portfolio(db.Model):
     __tablename__ = 'portfolios'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    coin_uuid = db.Column(db.Integer, db.ForeignKey('coins.uuid'), nullable=False)
+    coin_uuid = db.Column(db.String, db.ForeignKey('coins.uuid'), nullable=False)
     quantity = db.Column(db.Float, unique=False, nullable=False)
     total_paid = db.Column(db.Float, unique=False, nullable=False)
+    in_basket = db.Column(db.Boolean, unique=False, default=False)
     user = db.relationship('User', backref=db.backref('portfolio', lazy=True))
     coin = db.relationship('Coin',backref=db.backref('portfolio', lazy=True))
 
@@ -33,6 +34,15 @@ class Coin(db.Model):
     mcap = db.Column(db.Float, unique=False, nullable=False)
     volume = db.Column(db.Float, unique=False, nullable=False)
     change = db.Column(db.Float, unique=False, nullable=False)
+
+class Basket(db.Model):
+    __tablename__ = 'baskets'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    coin_uuid = db.Column(db.String, db.ForeignKey('coins.uuid'), nullable=False)
+    target_perc = db.Column(db.Float, unique=False, nullable=False)
+    user = db.relationship('User', backref=db.backref('target', lazy=True))
+    coin = db.relationship('Coin', backref=db.backref('target', lazy=True))
 
     def format_value(self, value):
         if value >= 100_000_000_000:
