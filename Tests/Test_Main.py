@@ -183,8 +183,11 @@ def test_add_coin_successful(client_logged):
 
     from Main import Portfolio
     with client_logged.application.app_context():
-        portfolio_entry = Portfolio.query.filter_by(co_symbol="ADA").first()
+        coin = Coin.query.filter_by(symbol="ADA").first()
+        portfolio_entry = Portfolio.query.filter_by(coin_uuid=coin.uuid).first()
         assert portfolio_entry is not None
+        assert portfolio_entry.quantity == 1
+        assert portfolio_entry.total_paid == 1
 
 def test_coin_overview(client_logged):
     add_coin_to_db(client_logged)

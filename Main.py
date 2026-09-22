@@ -466,7 +466,7 @@ def basket():
     total_paid_all = 0
     target_perc = {
         "ADA": 15, "ALGO": 8, "ATOM": 8, "AVAX": 15, "GRT": 8,
-        "DOT": 8, "FIL": 7, "LINK": 8, "PYTH": 15, "TRX": 8,
+        "DOT": 8, "FIL": 7, "LINK": 8, "PYTH": 15, "TRX": 8
     }
     for symbol, data in coin_data.items():
         current_coin = Coin.query.filter_by(symbol=symbol).first()
