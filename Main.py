@@ -268,6 +268,8 @@ def add_coin():
         coin_symbol = request.form.get("coin_symbol")
         quantity = request.form.get("quantity")
         total_paid = request.form.get("total_paid")
+        #in_basket = request.form.get("in_basket")
+        in_basket = 'in_basket' in request.form
 
         # double check if fields are filled
         if not coin_symbol or not quantity or not total_paid:
@@ -305,7 +307,8 @@ def add_coin():
             user_id=user.id,
             coin_uuid=coin.uuid,
             quantity=quantity,
-            total_paid=total_paid
+            total_paid=total_paid,
+            in_basket=in_basket
         )
         db.session.add(new_holding)
         db.session.commit()
@@ -320,6 +323,7 @@ def add_coin():
             flash(f"Added {quantity} {coin_symbol} (${price_per_coin:,.2f}/coin)! Add another transaction.", "success")
             return render_template("addcoin.html", username=user.username, coins=available_coins)
         else:
+            print(in_basket)
             flash(f"Successfully added {quantity} {coin_symbol} to your portfolio!", "success")
             return redirect("/portfolio")
 
@@ -420,10 +424,11 @@ def edit_transaction(transaction_id):
         return redirect("/sign-in")
 
     edit_item = Portfolio.query.filter_by(id=transaction_id).first()
-
+    print(edit_item.in_basket)
     if request.method == "POST":
         edit_item.quantity = request.form["quantity"]
         edit_item.total_paid = request.form["total_paid"]
+        edit_item.in_basket = 'in_basket' in request.form
         db.session.commit()
         flash(f"transaction successfully changed!", "success")
         return redirect(url_for("main.overview", symbol=edit_item.coin.symbol))
@@ -443,7 +448,7 @@ def basket():
         return redirect("/sign-in")
 
     # Get user's all portfolio transactions
-    holdings = Portfolio.query.filter_by(user_id=user.id).all()
+    holdings = Portfolio.query.filter_by(user_id=user.id, in_basket=True).all()
 
 
 
