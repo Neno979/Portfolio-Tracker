@@ -502,6 +502,33 @@ def basket():
     return render_template("basket.html", theads = theads, username=user.username, session_token=session_token, portfolio=portfolio_data,
                            total_v=total_value, total_pl=profit_loss_all, total_pl_perc=profit_loss_perc, target_perc=target_perc, )
 
+@main.route("/basket-target", methods=["GET", "POST"])
+def basket_target():
+
+    # Get session_token from cookie
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+    user = User.query.filter_by(session_token=session_token).first()
+    if not user:
+        flash("Please login first!", "warning")
+        return redirect("/sign-in")
+
+    baskets = Portfolio.query.filter_by(user_id=user.id, in_basket=1).all()
+    basket_data =[]
+    for basket in baskets:
+        basket_data.append({
+            "symbol": basket.coin_uuid,
+            "quantity": basket.quantity,
+        })
+    print(basket_data)
+    if request.method == "POST":
+
+        return redirect(url_for("main.overview"))
+
+    return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data)
+
 app = create_app()
 if __name__ == "__main__":
     app.run(debug=True)
