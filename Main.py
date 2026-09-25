@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, flash, make_response, url_for, Blueprint
-from models import Coin, Portfolio, User, db
+from models import Coin, Portfolio, User, Basket, db
 import requests
 import uuid
 import hashlib
@@ -283,11 +283,11 @@ def add_coin():
             total_paid = float(total_paid)
 
             # check if both are positive numbers
-            if quantity <= 0:
+            if quantity >= 0:
                 flash("Quantity must be greater than zero!", "danger")
                 return render_template("addcoin.html", username=user.username, coins=available_coins)
 
-            if total_paid <= 0:
+            if total_paid >= 0:
                 flash("Total paid must be greater than zero!", "danger")
                 return render_template("addcoin.html", username=user.username, coins=available_coins)
 
@@ -312,6 +312,18 @@ def add_coin():
         )
         db.session.add(new_holding)
         db.session.commit()
+
+        if in_basket:
+            existing_target = Basket.query.filter_by(user_id=user.id, coin_uuid=coin.uuid).first()
+            if not existing_target:
+                new_target = Basket(
+                    user_id=user.id,
+                    coin_uuid=coin.uuid,
+                    target_perc=None
+                )
+                db.session.add(new_target)
+                db.session.commit()
+
 
         # Calculate price per coin for display
         price_per_coin = total_paid / quantity
@@ -430,6 +442,18 @@ def edit_transaction(transaction_id):
         edit_item.total_paid = request.form["total_paid"]
         edit_item.in_basket = 'in_basket' in request.form
         db.session.commit()
+
+        if edit_item.in_basket:
+            existing_target = Basket.query.filter_by(user_id=user.id, coin_uuid=edit_item.coin_uuid).first()
+            if not existing_target:
+                new_target = Basket(
+                    user_id=user.id,
+                    coin_uuid=edit_item.coin_uuid,
+                    target_perc=None
+                )
+                db.session.add(new_target)
+                db.session.commit()
+
         flash(f"transaction successfully changed!", "success")
         return redirect(url_for("main.overview", symbol=edit_item.coin.symbol))
 
@@ -515,17 +539,17 @@ def basket_target():
         flash("Please login first!", "warning")
         return redirect("/sign-in")
 
-    baskets = Portfolio.query.filter_by(user_id=user.id, in_basket=1).all()
+    baskets = Basket.query.filter_by(user_id=user.id).join(Coin).all()
     basket_data =[]
-    for basket in baskets:
+    for b in baskets:
         basket_data.append({
-            "symbol": basket.coin_uuid,
-            "quantity": basket.quantity,
+            "symbol": b.coin.symbol,
+            "target_perc": b.target_perc,
         })
     print(basket_data)
     if request.method == "POST":
 
-        return redirect(url_for("main.overview"))
+        return redirect(url_for("main.basket"))
 
     return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data)
 

@@ -40,7 +40,7 @@ class Basket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     coin_uuid = db.Column(db.String, db.ForeignKey('coins.uuid'), nullable=False)
-    target_perc = db.Column(db.Float, unique=False, nullable=False)
+    target_perc = db.Column(db.Float, unique=False, nullable=True)
     user = db.relationship('User', backref=db.backref('target', lazy=True))
     coin = db.relationship('Coin', backref=db.backref('target', lazy=True))
 

@@ -63,8 +63,8 @@
                     <strong>{{ item.symbol }}</strong>
                     </a>
                 </td>
-                <td>€{{ "{:,.2f}".format(item.avg_buy_price) }}</td>
-                <td>€{{ "{:,.2f}".format(item.price) }}</td>
+                <td>€{{ "{:,.3f}".format(item.avg_buy_price) }}</td>
+                <td>€{{ "{:,.3f}".format(item.price) }}</td>
                 <td>{{ "{:,.2f}".format(item.target_perc) }}%</td>
                 <td class="{% if item.target_perc-(item.value/total_v*100) < 0 %}text-success{% else %}text-danger{% endif %}">
                     {{ "{:,.2f}".format((item.value/total_v*100)-item.target_perc) }}%</td>

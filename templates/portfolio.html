@@ -63,8 +63,8 @@
                     <strong>{{ item.symbol }}</strong>
                     </a>
                 </td>
-                <td>€{{ "{:,.2f}".format(item.avg_buy_price) }}</td>
-                <td>€{{ "{:,.2f}".format(item.price) }}</td>
+                <td>€{{ "{:,.3f}".format(item.avg_buy_price) }}</td>
+                <td>€{{ "{:,.3f}".format(item.price) }}</td>
                 <td class="{% if item.profit_loss > 0 %}text-success{% else %}text-danger{% endif %}">
                     €{{ "{:,.2f}".format(item.profit_loss) }}
                 </td>

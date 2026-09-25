@@ -29,8 +29,8 @@
                             <div class="form-group">
                                 {% for item in basket %}
                                     <div class="input-group">
-                                        <span class="input-group-text" style="flex: 3 0 0%;">"{{ item.symbol }}"</span>
-                                        <input name="quantity" type="number" step="1" class="form-control" style="flex: 5 0 0%;" value="{{ item.quantity}}" required>
+                                        <span class="input-group-text" style="flex: 3 0 0%;">{{ item.symbol }}</span>
+                                        <input name="item.symbol" type="number" step="1" class="form-control" style="flex: 5 0 0%;" value="{{ item.target_perc }}" required>
                                     </div>
                                 {% endfor %}
                                 <small class="text-primary">Percentage per each coin</small>
