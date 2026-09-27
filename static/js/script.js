@@ -29,3 +29,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     });
 });
+
+// Add coin form: restore last used choice on buy/sell radio button
+document.addEventListener("DOMContentLoaded", function () {
+    const buyRadio = document.getElementById("radio_buy");
+    const sellRadio = document.getElementById("radio_sell");
+
+    if (buyRadio && sellRadio && !buyRadio.checked && !sellRadio.checked) {
+        // only restore if neither is already checked server-side (i.e. this is just for the Add coin form, not edit)
+        const lastChoice = localStorage.getItem("last_transaction_type") || "buy";
+        (lastChoice === "sell" ? sellRadio : buyRadio).checked = true;
+    }
+
+    const form = document.querySelector("form");
+    if (form) {
+        form.addEventListener("submit", function () {
+            const selected = document.querySelector('input[name="transaction_type"]:checked');
+            if (selected) {
+                localStorage.setItem("last_transaction_type", selected.value);
+            }
+        });
+    }
+});

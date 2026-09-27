@@ -24,15 +24,25 @@
         <div class="bg-primary d-flex justify-content-center p-3">
             <div class="col-md-6">
                 <form method="post">
-                    <div class="form-group mb-3">
+                    <div class="form-group">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radio_buy" name="transaction_type" value="buy" class="custom-control-input" {% if transaction_type =="buy" %}checked{% endif %}>
+                            <label class="custom-control-label" for="radio_buy">Buy</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radio_sell" name="transaction_type" value="sell" class="custom-control-input" {% if transaction_type =="sell" %}checked{% endif %}>
+                            <label class="custom-control-label" for="radio_sell">Sell</label>
+                        </div>
+                    </div>
+                    <div class="form-group ">
                         <label class="text">Coin name</label>
-                            <input name="coin_symbol" type="text" class="form-control" list="coin-list" placeholder="Type to search (e.g., Bitco..,Ethe..).." required>
-                                <datalist id="coin-list">
-                                    {% for coin in coins %}
-                                        <option value="{{ coin.symbol }}">{{ coin.name }}</option>
-                                    {% endfor %}
-                                </datalist>
-                                <small class="text-primary">Start typing coin name to see available coins</small>
+                        <input name="coin_symbol" type="text" class="form-control" list="coin-list" placeholder="Type to search (e.g., Bitco..,Ethe..).." required>
+                        <datalist id="coin-list">
+                            {% for coin in coins %}
+                            <option value="{{ coin.symbol }}">{{ coin.name }}</option>
+                            {% endfor %}
+                        </datalist>
+                        <small class="text-primary">Start typing coin name to see available coins</small>
                     </div>
                     <div class="form-group ">
                         <label>Quantity</label>

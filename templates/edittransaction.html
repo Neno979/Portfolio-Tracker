@@ -24,23 +24,33 @@
         <div class="bg-primary d-flex justify-content-center p-3">
             <div class="col-md-6">
                 <form method="post">
-                    <div class="form-group mb-3">
+                    <div class="form-group">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radio_buy" name="transaction_type" value="buy" class="custom-control-input" {% if edit_item.transaction_type =="buy" %}checked{% endif %}>
+                            <label class="custom-control-label" for="radio_buy">Buy</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" id="radio_sell" name="transaction_type" value="sell" class="custom-control-input" {% if edit_item.transaction_type =="sell" %}checked{% endif %}>
+                            <label class="custom-control-label" for="radio_sell">Sell</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="text">Coin symbol</label>
-                            <input name=type="text" class="form-control" value="{{ edit_item.coin.symbol}}" disabled>
-                                <small class="text-primary">It is not possible to edit</small>
+                        <input name=type="text" class="form-control" value="{{ edit_item.coin.symbol}}" disabled>
+                        <small class="text-primary">It is not possible to edit</small>
                     </div>
                     <div class="form-group ">
                         <label>Quantity</label>
-                        <input name = "quantity" type="number" step="0.000001" class="form-control" value="{{ edit_item.quantity}}" required>
+                        <input name = "quantity" type="number" step="0.000001" class="form-control" value="{{ form_quantity}}" required>
                         <small class="text-primary">How many coins did you buy?</small>
                     </div>
                     <div class="form-group ">
                         <label>Purchase price(total)</label>
-                            <input name="total_paid" type="number" step="0.01" class="form-control" value="{{ edit_item.total_paid}}" required>
+                            <input name="total_paid" type="number" step="0.01" class="form-control" value="{{ form_total_paid}}" required>
                             <small class="text-primary">Total amount paid including all fees</small>
                     </div>
                     <div class="form-group ">
-                        <input name="in_basket" type="checkbox" value="True" {% if edit_item.in_basket %} checked {% endif%}">
+                        <input name="in_basket" type="checkbox" value="True" {% if edit_item.in_basket %} checked {% endif %}>
                         <label class="form-check-label">
                             Add to basket
                         </label>

@@ -19,6 +19,7 @@ class Portfolio(db.Model):
     coin_uuid = db.Column(db.String, db.ForeignKey('coins.uuid'), nullable=False)
     quantity = db.Column(db.Float, unique=False, nullable=False)
     total_paid = db.Column(db.Float, unique=False, nullable=False)
+    transaction_type = db.Column(db.String, unique=False, nullable=False, default='buy')
     in_basket = db.Column(db.Boolean, unique=False, default=False)
     user = db.relationship('User', backref=db.backref('portfolio', lazy=True))
     coin = db.relationship('Coin',backref=db.backref('portfolio', lazy=True))

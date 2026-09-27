@@ -268,8 +268,9 @@ def add_coin():
         coin_symbol = request.form.get("coin_symbol")
         quantity = request.form.get("quantity")
         total_paid = request.form.get("total_paid")
-        #in_basket = request.form.get("in_basket")
+        transaction_type = request.form.get("transaction_type")
         in_basket = 'in_basket' in request.form
+
 
         # double check if fields are filled
         if not coin_symbol or not quantity or not total_paid:
@@ -283,11 +284,11 @@ def add_coin():
             total_paid = float(total_paid)
 
             # check if both are positive numbers
-            if quantity >= 0:
+            if quantity <= 0:
                 flash("Quantity must be greater than zero!", "danger")
                 return render_template("addcoin.html", username=user.username, coins=available_coins)
 
-            if total_paid >= 0:
+            if total_paid <= 0:
                 flash("Total paid must be greater than zero!", "danger")
                 return render_template("addcoin.html", username=user.username, coins=available_coins)
 
@@ -301,6 +302,9 @@ def add_coin():
         if not coin:
             flash(f"Coin {coin_symbol} not found in our database!", "danger")
             return render_template("addcoin.html", username=user.username, coins=available_coins)
+        if transaction_type == "sell":
+            quantity = -quantity
+            total_paid = -total_paid
 
         # Add to portfolio and save to DB
         new_holding = Portfolio(
@@ -308,6 +312,7 @@ def add_coin():
             coin_uuid=coin.uuid,
             quantity=quantity,
             total_paid=total_paid,
+            transaction_type=transaction_type,
             in_basket=in_basket
         )
         db.session.add(new_holding)
@@ -331,9 +336,11 @@ def add_coin():
         # Check which button was clicked
         action = request.form.get("action")
 
+        transaction_type = request.form.get("transaction_type")
+
         if action == "Sub_and_add":
             flash(f"Added {quantity} {coin_symbol} (${price_per_coin:,.2f}/coin)! Add another transaction.", "success")
-            return render_template("addcoin.html", username=user.username, coins=available_coins)
+            return render_template("addcoin.html", username=user.username, coins=available_coins, transaction_type=transaction_type)
         else:
             print(in_basket)
             flash(f"Successfully added {quantity} {coin_symbol} to your portfolio!", "success")
@@ -362,7 +369,6 @@ def overview(symbol):
     # Get all transactions for this coin
     coin = Coin.query.filter_by(symbol=symbol.upper()).first()
     if not coin:
-        # handle gracefully — redirect, 404, flash message, etc.
         return redirect("/portfolio")
 
     transactions = (Portfolio.query.filter_by
@@ -437,9 +443,38 @@ def edit_transaction(transaction_id):
 
     edit_item = Portfolio.query.filter_by(id=transaction_id).first()
     print(edit_item.in_basket)
+
     if request.method == "POST":
-        edit_item.quantity = request.form["quantity"]
-        edit_item.total_paid = request.form["total_paid"]
+
+        quantity = request.form["quantity"]
+        total_paid = request.form["total_paid"]
+        transaction_type = request.form["transaction_type"]
+
+        try:
+            quantity = float(quantity)
+            total_paid = float(total_paid)
+
+            # check if both are positive numbers
+            if quantity <= 0:
+                flash("Quantity must be greater than zero!", "danger")
+                return render_template("edittransaction.html", username=user.username,session_token=session_token, edit_item=edit_item)
+
+            if total_paid <= 0:
+                flash("Total paid must be greater than zero!", "danger")
+                return render_template("edittransaction.html", username=user.username,session_token=session_token, edit_item=edit_item)
+
+        except ValueError:
+            flash("Please enter valid numbers!", "danger")
+            return render_template("edittransaction.html", username=user.username,session_token=session_token, edit_item=edit_item)
+
+        if transaction_type == "sell":
+            edit_item.quantity = -quantity
+            edit_item.total_paid =-total_paid
+        else:
+            edit_item.quantity = quantity
+            edit_item.total_paid = total_paid
+
+        edit_item.transaction_type = request.form["transaction_type"]
         edit_item.in_basket = 'in_basket' in request.form
         db.session.commit()
 
@@ -457,7 +492,10 @@ def edit_transaction(transaction_id):
         flash(f"transaction successfully changed!", "success")
         return redirect(url_for("main.overview", symbol=edit_item.coin.symbol))
 
-    return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item)
+    edit_item = Portfolio.query.filter_by(id=transaction_id).first()
+    form_quantity = abs(edit_item.quantity)
+    form_total_paid = abs(edit_item.total_paid)
+    return render_template("edittransaction.html", username=user.username, session_token=session_token, edit_item=edit_item, form_quantity=form_quantity, form_total_paid=form_total_paid)
 
 @main.route("/basket" , methods=["GET", "POST"])
 def basket():

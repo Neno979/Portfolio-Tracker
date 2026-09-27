@@ -94,10 +94,10 @@
 
 {% block table %}
     {% for tx in transactions %}
-        <tr>
+        <tr class="{% if tx.quantity < 0 %}text-danger{% else %}{% endif %}">
             <td>{{ "%.2f"|format(tx.quantity) }}</td>
             <td>${{ "{:,.2f}".format(tx.total_paid) }}</td>
-            <td>buy</td>
+            <td>{{ (tx.transaction_type) }}</td>
             <td>
                 <a href="/edit-transaction/{{ tx.id }}" class="btn btn-sm btn-outline-primary">Edit</a>
                 <a href="/delete-transaction/{{ tx.id }}/{{ t_count }}"
