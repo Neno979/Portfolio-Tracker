@@ -112,7 +112,11 @@ def portfolio():
         current_coin = Coin.query.filter_by(symbol=symbol).first()
         current_value = 0
         if current_coin:
-            avg_buy_price = data["total_paid"] / data["total_quantity"]
+            if data["total_quantity"] == 0:
+                avg_buy_price = 0
+            else:
+                avg_buy_price = data["total_paid"] / data["total_quantity"]
+
             current_value = data["total_quantity"] * current_coin.price
             profit_loss = current_value - data["total_paid"]
             total_quantity = data["total_quantity"]
@@ -387,11 +391,22 @@ def overview(symbol):
     # Calculate totals
     total_quantity = sum(t.quantity for t in transactions)
     total_paid = sum(t.total_paid for t in transactions)
-    avg_price = total_paid / total_quantity
     current_value = total_quantity * current_coin.price
     profit_loss = current_value - total_paid
-    profit_loss_pct = (profit_loss / total_paid) * 100
-    share = (current_value / total_value) * 100
+
+    if total_paid == 0:
+        profit_loss_pct = 0
+    else:
+        profit_loss_pct = (profit_loss / total_paid) * 100
+    if total_quantity == 0:
+        avg_price = 0
+    else:
+        avg_price = total_paid / total_quantity
+    if total_value == 0:
+        share = 0
+    else:
+        share = (current_value / total_value) * 100
+
     realized_gain = 0
 
     theads = ["quantity", "paid", "buy/sell", "action" ]
