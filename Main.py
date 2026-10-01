@@ -594,17 +594,52 @@ def basket_target():
 
     baskets = Basket.query.filter_by(user_id=user.id).join(Coin).all()
     basket_data =[]
+    total = 0
     for b in baskets:
+        total += b.target_perc
+        print("total", total)
         basket_data.append({
             "symbol": b.coin.symbol,
             "target_perc": b.target_perc,
         })
     print(basket_data)
     if request.method == "POST":
+        total=0
+        for key, value in request.form.items():
+            # loop through every field submitted in the form,
+            # one (name, value) pair at a time
+            if key.startswith("target_") and value:
+                symbol = key.replace("target_", "")
+                try:
+                    target_value = float(value)
+                except ValueError:
+                    continue
+                coin = Coin.query.filter_by(symbol=symbol).first()
+                if not coin:
+                    continue
+                    # if no matching coin was found, skip
+                    # this field entirely
+                existing_target = Basket.query.filter_by(user_id=user.id, coin_uuid=coin.uuid).first()
+                # check if this user already has a saved target for this coin
+                if existing_target:
+                    existing_target.target_perc = target_value
+                    # update the existing target's percentage
+                else:
+                    new_target = Basket(
+                        user_id=user.id,
+                        coin_uuid=coin.uuid,
+                        target_perc=target_value
+                    )
+                    db.session.add(new_target)
+                total += target_value
+                print(total)
+                db.session.commit()
+        if not total == 100:
+            return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data, total_perc=total)
+        else:
+            return redirect(url_for("main.basket"))
 
-        return redirect(url_for("main.basket"))
-
-    return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data)
+    return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data, total=total)
 
 app = create_app()
 if __name__ == "__main__":
