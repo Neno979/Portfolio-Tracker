@@ -65,10 +65,13 @@
                 </td>
                 <td>€{{ "{:,.3f}".format(item.avg_buy_price) }}</td>
                 <td>€{{ "{:,.3f}".format(item.price) }}</td>
-                <td>{{ "{:,.2f}".format(item.target_perc) }}%</td>
-                <td class="{% if item.target_perc-(item.value/total_v*100) < 0 %}text-success{% else %}text-danger{% endif %}">
-                    {{ "{:,.2f}".format((item.value/total_v*100)-item.target_perc) }}%</td>
-                <td>{{ "%.1f"|format(item.target_perc/100*(total_v+100)-item.value) }}%</td>
+                <td> {% if item.target_perc is not none %} {{ "{:,.0f}".format(item.target_perc) }}%
+                    {% else %} — {% endif %} </td>
+                <td class="{% if item.target_perc is not none and item.target_perc-(item.value/total_v*100) < 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if item.target_perc is not none %} {{ "{:,.2f}".format((item.value/total_v*100)-item.target_perc) }}%
+                    {% else %} 0% {% endif %} </td>
+                <td>{% if item.target_perc is not none %} {{ "%.1f"|format(item.target_perc/100*(total_v+100)-item.value) }}%
+                    {% else %} 0% {% endif %} </td>
             </tr>
         {% endfor %}
     {% endif %}

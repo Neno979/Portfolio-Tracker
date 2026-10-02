@@ -546,10 +546,10 @@ def basket():
     portfolio_data = []
     total_value = 0
     total_paid_all = 0
-    target_perc = {
-        "ADA": 15, "ALGO": 8, "ATOM": 8, "AVAX": 15, "GRT": 8,
-        "DOT": 8, "FIL": 7, "LINK": 8, "PYTH": 15, "TRX": 8
-    }
+
+    baskets = Basket.query.filter_by(user_id=user.id).join(Coin).all()
+    target_perc = {b.coin.symbol: b.target_perc for b in baskets}
+
     for symbol, data in coin_data.items():
         current_coin = Coin.query.filter_by(symbol=symbol).first()
         current_value = 0
@@ -596,11 +596,14 @@ def basket_target():
     basket_data =[]
     total = 0
     for b in baskets:
-        total += b.target_perc
+        percent = b.target_perc
+        if percent == None:
+            percent = 0
+        total += percent
         print("total", total)
         basket_data.append({
             "symbol": b.coin.symbol,
-            "target_perc": b.target_perc,
+            "target_perc": percent,
         })
     print(basket_data)
     if request.method == "POST":
@@ -635,8 +638,10 @@ def basket_target():
                 print(total)
                 db.session.commit()
         if not total == 100:
+            flash("Total percentage is " + str(total) + " must be 100", "danger")
             return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data, total_perc=total)
         else:
+            flash(f"Basket targets are successfully updated!", "success")
             return redirect(url_for("main.basket"))
 
     return render_template("baskettarget.html", username=user.username, session_token=session_token, basket=basket_data, total=total)
